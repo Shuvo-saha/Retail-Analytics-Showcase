@@ -40,6 +40,7 @@ def churn_analyzer():
     dt = joblib.load('Streamlit Data\Churn\dt.joblib')
     lr = joblib.load('Streamlit Data\Churn\lr.joblib')
     rf = joblib.load('Streamlit Data\Churn\\rf.joblib')
+    stack = joblib.load('Streamlit Data\Churn\\stack.joblib')
     X = np.load('Streamlit Data\Churn\X.npy')
     y = np.load('Streamlit Data\Churn\y.npy')
 
@@ -49,7 +50,7 @@ def churn_analyzer():
         "Streamlit Data\Churn\churn_df_sample.bz2")
     X_train, X_test, y_train, y_test = train_test_split(
         X, y, test_size=0.2, random_state=42)
-    return X_test, y_test, gbc, dt, lr, rf, scaler, churn_df_sample
+    return X_test, y_test, gbc, dt, lr, rf, stack, scaler, churn_df_sample
 
 
 @st.cache(allow_output_mutation=True)
@@ -94,7 +95,7 @@ st.set_page_config(
     initial_sidebar_state="expanded"
 )
 
-st.image("Streamlit Data\Images\color_logo.png", width=100)
+st.image("Streamlit Data\Images\color_logo.png", width=150)
 st.markdown("# Impactful Retail Analytics")
 
 st.markdown("""
@@ -112,7 +113,7 @@ st.markdown("""
 
 question = st.selectbox(label="", options=['Pick a question',
                                            'What products do we recommend to our users?', 'What products increase the chance of buying other products?',
-                                           'What customers are we likely to lose soon?', 'How can we segment our customers?', 'Who are our most important customers?', 'References'])
+                                           'What customers are we likely to lose soon?', 'How can we segment our customers?', 'Who are our most important customers?', 'References and Further Reading'])
 
 if question == 'What products do we recommend to our users?':
 
@@ -121,13 +122,13 @@ if question == 'What products do we recommend to our users?':
     # this is needed for the recommender
     random_no = rand_gen(0, 7100)
     # Load the data
-    rating_crosstab, merged_df_tr, coss_mat = recommendation_engine()
     # make a random selection of 3 books to pick from
     # take the book title from the user and return the corresponding ISBN
     st.write("A bookseller, just like Barnes & Nobles, wants to recommend their users new books based on their favorite books. All they have is a very rich dataset of their many users and their book preferences.")
 
-    st.markdown("The dataset contains approximately *5812 books* and *15,797 users*. Below, we have 10 rows from the dataset. The ratings are on a scale of 0-10 with 0 being the lowest rating.  **How can they make intelligent book recommendations?**")
+    st.markdown("The dataset contains approximately *5812 books* and *15,797 users*. Below, we have 10 rows from the dataset. The ratings are on a scale of 0-10 with 0 being the lowest rating.  How can they make intelligent book recommendations?")
     st.image("Streamlit Data\Images\\book.png", width=50)
+    rating_crosstab, merged_df_tr, coss_mat = recommendation_engine()
     st.table(merged_df_tr[["Book", "User-ID", "Book-Rating"]]
              [20:30].assign(hack='').set_index('hack'))
 
@@ -263,51 +264,157 @@ if question == 'What products increase the chance of buying other products?':
 # CHURN ANALYSIS
 if question == 'What customers are we likely to lose soon?':
     # load in the data
-    X_test, y_test, gbc, dt, lr, rf, scaler, churn_df_sample = churn_analyzer()
-    st.markdown('## What customers are we likely to lose soon?')
-    st.write("A telecom operator wants to know which customers are likely to switch to their competitor. Can it use its past consumer data to predict churn of new customers?")
-    st.write(churn_df_sample.assign(hack='').set_index('hack'))
+    X_test, y_test, gbc, dt, lr, rf, stack, scaler, churn_df_sample = churn_analyzer()
 
-    st.markdown(
-        "### Using a classification model, we can find out what traits lead to churn.")
-    st.write("For the telecom operator's consumers, customers that have churned have made a large no of customer service calls, mostly talk during the day, and have an international plan. The other features are listed in order of importance below:")
+    st.markdown('## What customers are we likely to lose soon?')
+    st.markdown('''
+             A telecom service, like AT&T, wants to know which customers are likely to switch to their competitor.
+             The company has a dataset of its *3333 customers* and *17 features* per customer. The company also knows which 
+             customers have shifted to competitor services.\n
+             ''')
+    with st.beta_expander("See feature descriptions"):
+        st.markdown('''
+                    - *Account length*, which is  how many days the customer has used the operator's services.
+             - *International plan*, where 0 indicates the customer is not on the plan and 1 indicates the opposite.
+             - *Voice mail plan*, where 0 indicates voice mail is not activated and 1 indicates the customer has voice mail activated.
+             - *Number vmail messages* indicates the number of voice mail messages the customer has received in the past.
+             - Columns with *calls* indicates number of calls during that time period.
+             - Columns with *minutes* indicates total minutes spent talking during that time period.
+             - Columns with *charge* indicate the amount of money charged to the customer during that time period.
+             - *Customer service calls* is the number of calls the customer has made to customer service.\n
+             Note that international calls have separate call, charge and minutes data.
+                    ''')
+
+    st.write("The dataset sample is shown below:")
+
+    st.write(churn_df_sample.assign(hack='').set_index('hack'))
+    st.write(
+        "Can it use its past customer data to predict churn of new customers?")
+
+    st.markdown('''
+        ### Using a classification model, we can find out what traits lead to churn. 
+        A *classification model* is a fancy way of saying that the model tries to predict
+        classes rather than output a numeric value. In our case, we have two classes - churned
+        and not churned.\n
+        There are many classification techniques from simple linear methods like *logistic
+        regression* to more complex methods like *neural networks*. We've picked 5 common models for
+        this problem set. Pick any model below and we'll show you how it works, and how it performs.
+        ''')
+
     # This is PFI, tkae  the text, format as df then sort,rename col and add color style
     # selection for different models
-    model = st.selectbox(label="Pick Classification Algorithm", options=[
-        gbc, dt, lr, rf], format_func=model_formatter)
+    model = st.selectbox(label="Pick classification algorithm", options=[
+        gbc, dt, lr, rf, stack], format_func=model_formatter)
     y_pred = model.predict(X_test)
-    text_fi = explain_weights(model, targets=[False, True], feature_names=['account length', 'international plan', 'voice mail plan',
-                                                                           'number vmail messages', 'total day minutes', 'total day calls',
-                                                                           'total day charge', 'total eve minutes', 'total eve calls',
-                                                                           'total eve charge', 'total night minutes', 'total night calls',
-                                                                           'total night charge', 'total intl minutes', 'total intl calls',
-                                                                           'total intl charge', 'customer service calls'], top=len(['account length', 'international plan', 'voice mail plan',
-                                                                                                                                    'number vmail messages', 'total day minutes', 'total day calls',
-                                                                                                                                    'total day charge', 'total eve minutes', 'total eve calls',
-                                                                                                                                    'total eve charge', 'total night minutes', 'total night calls',
-                                                                                                                                    'total night charge', 'total intl minutes', 'total intl calls',
-                                                                                                                                    'total intl charge', 'customer service calls'])+1)
-    text_fi = eli5.formatters.as_dataframe.format_as_dataframe(text_fi)
-    pfi_table = text_fi[['feature', 'weight']].sort_values(
-        "weight", ascending=False).rename(columns={'feature': "Features", "weight": "Weights"}).style.background_gradient(axis=0)
-    # Display feautr importance table in two columns
-    col_j, col_jj = st.beta_columns([3, 5])
-    col_j.table(pfi_table)
     if model == gbc:
-        col_jj.markdown("Write explanation for the models here")
+
+        st.markdown('''
+                A *Gradient Boosting Classifier* is a model that uses a series of weak learners to make predictions.
+                It is an *ensemble* technique since it uses multiple models.\n
+                The algorithm/model minimizes a loss function e.g.
+                regression uses the squared error for its loss function. The weak learners are usually shallow
+                decision trees (select Decision
+                Tree Classifier for a thorough explanation). Then the trees are added one at a time and
+                loss is reduced gradually using a *gradient descent procedure*. More trees are added to
+                reduce loss until we've improved the final output or we've reached a maximum number of trees.
+                For more on Gradient Boosting, go over [this article](https://towardsdatascience.com/understanding-gradient-boosting-machines-9be756fe76ab). 
+                ''')
+        st.image("Streamlit Data\Images\\boosting.png",
+                 caption="Source: Corporate Finance Institute",  width=700)
+        st.markdown('''The model predicts that customers with *high number of customer service calls, who mostly talk during 
+                the day, and have a high day charge* are likely to churn. The other features are listed in order of importance below.
+                Note that the values are not important for our analysis but the rankings are.
+                ''')
     elif model == dt:
-        col_jj.markdown("Write explanation for the models here")
+        st.markdown('''
+        A *Decision Tree Classifier* breaks down a dataset into smaller and smaller subsets based on certain cutoffs. Thus, the
+        number of examples get smaller every division. Once the tree reaches a certain *depth* (or number of splits) or it
+        has leaves that are *pure* (all examples belong to one class), it stops dividing.
+        For more on Decision Trees, go to [this article](https://towardsdatascience.com/decision-tree-in-machine-learning-e380942a4c96). 
+        ''')
+        st.image(image="Streamlit Data\Images\\rain.png",
+                 caption="Rain Forecasting Decision Tree, Source: Prince Yadav, Towards Data Science", width=500)
+        st.markdown('''The model predicts that customers with *high number of customer service calls, who mostly talk during 
+                the day, and have a high day charge* are likely to churn. The other features are listed in order of importance below.
+                Note that the values are not important for our analysis but the rankings are.
+                ''')
     elif model == lr:
-        col_jj.markdown("Write explanation for the models here")
+        st.markdown('''
+        *Logistic Regression* is similar to linear regression but instead
+        it uses a function that squeezes the output to a scale of 0 to 1. 
+        Using a cutoff value (usually 0.5),
+        it makes binary predictions. Logistic Regression is explained
+        in more detail in this excellent video by Josh Starmer:
+        ''')
+        st.video("https://www.youtube.com/watch?v=yIYKR4sgzI8")
+        st.write('''
+                 The model predicts that customers with *high number of customer service calls, an international plan,
+                 and a high day charge* are likely to churn. The other features are listed in order of importance below.
+                Note that the values are not important for our analysis but the rankings are.
+                 ''')
     elif model == rf:
-        col_jj.markdown("Write explanation for the models here")
+        st.markdown('''
+        *Random Forest Classifiers* train multiple decision trees (Pick Decision Tree Classifier for a thorough explanation).
+        on subsets of the observations and features and then combines them for a more accurate prediction. Even though
+        they're not complicated to understand, they're often very accurate and robust.\n
+        The model predicts that customers with *high number of customer service calls, who mostly talk during 
+                the day, and have a high day charge* are likely to churn. The other features are listed in order of importance below.
+                Note that the values are not important for our analysis but the rankings are.
+        ''')
+    elif model == stack:
+        st.markdown('''
+        *Stacking, Bagging and Boosting* are all *ensemble* algorithms. 
+        - *Bagging* uses
+        homogeneous weak learners, trains them independently in parallel and then
+        combines them using a deterministic method like averaging.
+        - *Boosting* also uses homogeneous weak learners, but instead of combining
+        them, it trains them sequentially and then uses a deterministic method like averaging.
+        - *Stacking* uses heterogenous or different types of weak learners, trains
+        them in parallel and combines them by using another model (like
+        logistic regression) to output a prediction.
+        Note that the feature importances for stacking models are not shown below as 
+        it is difficult to calculate and may not be accurate. However, the accuracy usually
+        improves when combining multiple models (and has improved in our case as well). 
+        ''')
+
+    # if stacking classifier this doesn't work so make sure to use if function here
+    if model != stack:
+        text_fi = explain_weights(model, targets=[False, True], feature_names=['account length', 'international plan', 'voice mail plan',
+                                                                               'number vmail messages', 'total day minutes', 'total day calls',
+                                                                               'total day charge', 'total eve minutes', 'total eve calls',
+                                                                               'total eve charge', 'total night minutes', 'total night calls',
+                                                                               'total night charge', 'total intl minutes', 'total intl calls',
+                                                                               'total intl charge', 'customer service calls'], top=len(['account length', 'international plan', 'voice mail plan',
+                                                                                                                                        'number vmail messages', 'total day minutes', 'total day calls',
+                                                                                                                                        'total day charge', 'total eve minutes', 'total eve calls',
+                                                                                                                                        'total eve charge', 'total night minutes', 'total night calls',
+                                                                                                                                        'total night charge', 'total intl minutes', 'total intl calls',
+                                                                                                                                        'total intl charge', 'customer service calls'])+1)
+        text_fi = eli5.formatters.as_dataframe.format_as_dataframe(text_fi)
+        pfi_table = text_fi[['feature', 'weight']].sort_values(
+            "weight", ascending=False).rename(columns={'feature': "Features", "weight": "Weights"}).style.background_gradient(axis=0)
+        with st.beta_expander("See explanation of feature importance"):
+            st.markdown('''
+                        Most machine learning models are *black-box* models. This means that they're created
+                        directly from data and even the people who designed them, cannot understand how
+                        the variables are being combined to make predictions. Methods to explain these models
+                        are usually in two forms: local and global explainers.\n 
+                        Local explainers allow us to
+                        explain a specific prediction e.g. *LIME (Local Interpretable Model-agnostic Explanations)*
+                        creates a white-box or explainable model that works well in the area close to the concerned
+                        prediction example.\n
+                        Global explainers are used to explain the whole model and how every feature impacts it on a
+                        general level e.g. *Permutation Feature Importance (PFI)* looks at how much the score (R-Squared, F-1 score, etc)
+                        decreases when a feature is not available. The values below are generated using [PFI and the ELI5 libary](https://eli5.readthedocs.io/en/latest/blackbox/permutation_importance.html).
+                        ''')
+        st.table(pfi_table)
     # print a confusion matrix using test data
     y_pred = model.predict(X_test)
 
     # Plot conf matrix and f1 score in an expander
     with st.beta_expander(
             label='See classification accuracy and other metrics for the selected model'):
-        col_i, col_ii = st.beta_columns([3, 5])
+        col_i, col_ii = st.beta_columns([2, 5])
         conf_fig = plt.figure(figsize=(5, 4))
         conf_matrix = metrics.confusion_matrix(y_pred, y_test)
         sns.heatmap(conf_matrix, annot=True, xticklabels=[
@@ -317,10 +424,17 @@ if question == 'What customers are we likely to lose soon?':
         plt.title("Confusion Matrix")
         buf = BytesIO()
         conf_fig.savefig(buf, format="png")
-        col_i.image(buf)
+        col_i.image(buf, use_column_width=True)
         # F1 score
         col_ii.markdown(
             f'''
+            To understand accuracy of our model, we can make a *confusion matrix* which plots the *predicted*
+            values against  the *actual/true* values. This data is different from our training data and is
+            usually called the *test/validation* data. Low values in the top right and bottom left are better. \n
+            Accuracy is not [a good metric for classification with unbalanced classes](https://medium.com/analytics-vidhya/accuracy-vs-f1-score-6258237beca2#:~:text=Accuracy%20is%20used%20when%20the,and%20False%20Positives%20are%20crucial&text=In%20most%20real%2Dlife%20classification,to%20evaluate%20our%20model%20on.). Instead, the *F1 Score* is used
+            which is a weighted average of the precision and recall. The *precision* is the number of positive class 
+            predictions that actually belong to the positive class while the *recall* quantifies the number of positive class 
+            predictions made out of all positive examples in the dataset.\n
             F1 score for **{model_formatter(model)}** is **{round((metrics.f1_score(y_test, y_pred))*100,2)}%**.
             Recall score is **{round((metrics.recall_score(y_test, y_pred))*100,2)}%** and 
             Precision score is **{round((metrics.precision_score(y_test, y_pred))*100,2)}%**
@@ -328,7 +442,12 @@ if question == 'What customers are we likely to lose soon?':
         col_ii.write(
             f'')
 
-    st.write("This model can be tested against an imaginary consumer with the following features. Note that other features have been preset for convenience.")
+    st.write('''
+             This model can be tested against an imaginary consumer with the following features. 
+             Note that other features have been preset for convenience.
+             ''')
+    st.info('''Be aware that none of the models have 100% accuracy (especially Logistic Regression) and thus may output
+            wrong predictions.''')
     # make 6 different columns
     col4, col5, col6, col7, col8, col9 = st.beta_columns(6)
 
@@ -353,7 +472,7 @@ if question == 'What customers are we likely to lose soon?':
             "The model predicts the customer is **unlikely** to switch to the competitor (given the dataset)")
     else:
         st.markdown(
-            "The model predicts the customer is **highly likely** to switch to the competitor (given the dataset)")
+            "The model predicts the customer is **likely** to switch to the competitor (given the dataset)")
 
 
 # CUSTOMER SEGMENTATION - CLUSTERING
@@ -432,13 +551,29 @@ if question == 'Who are our most important customers?':
                     [This analysis](https://www.kaggle.com/blewitts/ecommerce-rfm-analysis) on Kaggle also goes over the other customer
                     segments and explains the metrics (it was also an inspiration for this analysis ❤️).
                     ''')
-
+if question == "Pick a question":
+    st.markdown(
+        "### Boston Consultancy Group's thoughts on Data & Analytics in Retail")
+    st.video("https://www.youtube.com/watch?v=AOV6bqpCV6k&t=6s")
 # REFERENCES
-if question == "References":
+if question == "References and Further Reading":
     st.markdown('''
                 This website wouldn't have been possible without the helpful resources below:
                 - [Book Recommendations Dataset on Kaggle](https://www.kaggle.com/saurabhbagchi/books-dataset)
                 - [Churn Analysis Dataset on Kaggle](https://www.kaggle.com/sandipdatta/customer-churn-analysis)
                 - [Clustering Dataset on Kaggle](https://www.kaggle.com/ankits29/credit-card-customer-clustering-with-explanation)
-                - [RFM Analysis Dataset on Kaggle](https://www.kaggle.com/roshansharma/online-retail)
+                - [RFM Analysis Dataset on Kaggle](https://www.kaggle.com/roshansharma/online-retail)\n
+                For more information on Machine Learning, Statistics and Retail Analytics, check out these great resources:
+                - [Statquest for Statistics and ML](https://www.youtube.com/user/joshstarmer)
+                - [3Blue1Brown for Math](https://www.youtube.com/user/3blue1brown)]
+                - [Sentdex for ML Coding Tutorials](https://www.youtube.com/user/sentdex)
+                - [Google Cloud Next'19 Keynote on Retail and AI](https://www.youtube.com/watch?v=pKEmQ1VMxsM)
+                - [DataRobot APAC Data Science's Presentation on Data Science in Retail](https://www.youtube.com/watch?v=PThNpfd3waE)\n
+                This website was built using Python and the following libraries:
+                - [Streamlit] (https://docs.streamlit.io/en/stable/index.html)
+                - [ELI5](https://eli5.readthedocs.io/en/latest/overview.html)
+                - [Scikit-Learn](https://scikit-learn.org/)
+                - [Matplotlib](https://matplotlib.org/)
+                - [Seaborn](https://seaborn.pydata.org/)
+                - [Pandas](https://pandas.pydata.org/)
                 ''')
