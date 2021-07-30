@@ -36,18 +36,18 @@ def association_analyzer():
 @st.cache(allow_output_mutation=True)
 def churn_analyzer():
     # returns X,y,gbc scaler,churn_df_sample in that order
-    gbc = joblib.load('Streamlit Data\Churn\gbc.joblib')
-    dt = joblib.load('Streamlit Data\Churn\dt.joblib')
-    lr = joblib.load('Streamlit Data\Churn\lr.joblib')
-    rf = joblib.load('Streamlit Data\Churn\\rf.joblib')
-    stack = joblib.load('Streamlit Data\Churn\\stack.joblib')
-    X = np.load('Streamlit Data\Churn\X.npy')
-    y = np.load('Streamlit Data\Churn\y.npy')
+    gbc = joblib.load('Streamlit Data/Churn/gbc.joblib')
+    dt = joblib.load('Streamlit Data/Churn/dt.joblib')
+    lr = joblib.load('Streamlit Data/Churn/lr.joblib')
+    rf = joblib.load('Streamlit Data/Churn//rf.joblib')
+    stack = joblib.load('Streamlit Data/Churn//stack.joblib')
+    X = np.load('Streamlit Data/Churn/X.npy')
+    y = np.load('Streamlit Data/Churn/y.npy')
 
-    with open('Streamlit Data\Churn\scaler', 'rb') as f:
+    with open('Streamlit Data/Churn/scaler', 'rb') as f:
         scaler = pickle.load(f)
     churn_df_sample = pd.read_pickle(
-        "Streamlit Data\Churn\churn_df_sample.bz2")
+        "Streamlit Data/Churn/churn_df_sample.bz2")
     X_train, X_test, y_train, y_test = train_test_split(
         X, y, test_size=0.2, random_state=42)
     return X_test, y_test, gbc, dt, lr, rf, stack, scaler, churn_df_sample
@@ -57,14 +57,14 @@ def churn_analyzer():
 def clustering():
     # returns cluster_data, X_new in that order
     cluster_data_2 = pd.read_pickle(
-        "Streamlit Data\Customer Segmentation\Clustering\cluster_data_2.bz2")
+        "Streamlit Data/Customer Segmentation/Clustering/cluster_data_2.bz2")
     cluster_data_3 = pd.read_pickle(
-        "Streamlit Data\Customer Segmentation\Clustering\cluster_data_3.bz2")
+        "Streamlit Data/Customer Segmentation/Clustering/cluster_data_3.bz2")
     cluster_data_4 = pd.read_pickle(
-        "Streamlit Data\Customer Segmentation\Clustering\cluster_data_4.bz2")
+        "Streamlit Data/Customer Segmentation/Clustering/cluster_data_4.bz2")
     cluster_data_5 = pd.read_pickle(
-        "Streamlit Data\Customer Segmentation\Clustering\cluster_data_5.bz2")
-    with open('Streamlit Data\Customer Segmentation\Clustering\X_new', 'rb') as X_new_file:
+        "Streamlit Data/Customer Segmentation/Clustering/cluster_data_5.bz2")
+    with open('Streamlit Data/Customer Segmentation/Clustering/X_new', 'rb') as X_new_file:
         X_new = pickle.load(X_new_file)
     return cluster_data_2, cluster_data_3, cluster_data_4, cluster_data_5, X_new
 
@@ -95,7 +95,7 @@ st.set_page_config(
     initial_sidebar_state="expanded"
 )
 
-st.image("Streamlit Data\Images\color_logo.png", width=150)
+st.image("Streamlit Data/Images/color_logo.png", width=150)
 st.markdown("# Impactful Retail Analytics")
 
 st.markdown("""
@@ -127,7 +127,7 @@ if question == 'What products do we recommend to our users?':
     st.write("A bookseller, just like Barnes & Nobles, wants to recommend their users new books based on their favorite books. All they have is a very rich dataset of their many users and their book preferences.")
 
     st.markdown("The dataset contains approximately *5812 books* and *15,797 users*. Below, we have 10 rows from the dataset. The ratings are on a scale of 0-10 with 0 being the lowest rating.  How can they make intelligent book recommendations?")
-    st.image("Streamlit Data\Images\\book.png", width=50)
+    st.image("Streamlit Data/Images/book.png", width=50)
     rating_crosstab, merged_df_tr, coss_mat = recommendation_engine()
     st.table(merged_df_tr[["Book", "User-ID", "Book-Rating"]]
              [20:30].assign(hack='').set_index('hack'))
@@ -155,7 +155,7 @@ if question == 'What products do we recommend to our users?':
                     spaces such as our user ratings (imagine every user is an axis). Thus Cosine Similarity better classifies similar books compared to Euclidean Distance.
                     To learn more, go to this [article](https://www.machinelearningplus.com/nlp/cosine-similarity/).
                     ''')
-        st.image("Streamlit Data\Images\cosine-similarity.png", width=500)
+        st.image("Streamlit Data/Images/cosine-similarity.png", width=500)
     search = st.selectbox(label="Select a book to generate top 3 recommendations",
                           options=list(merged_df_tr["Book"][random_no:random_no+100]), help="100 books are randomly selected for the selection pool")
     search = merged_df_tr.loc[merged_df_tr["Book"]
@@ -190,7 +190,7 @@ if question == 'What products increase the chance of buying other products?':
              contains the basket of goods that was bought by users. There are *7500 such transactions*. Can they find out
              products that go well with other products using data alone?
              ''')
-    st.image("Streamlit Data\Images\grocery.png", width=50)
+    st.image("Streamlit Data/Images/grocery.png", width=50)
     st.table(pd.DataFrame({"Item 1": ['burgers', 'meatballs', 'eggs'],
                            "Item 2": ['chutney', 'salsa', 'ketchup'],
                            "Item 3": ['turkey', 'avocado', 'peaches']}).assign(hack='').set_index('hack'))
@@ -318,7 +318,7 @@ if question == 'What customers are we likely to lose soon?':
                 reduce loss until we've improved the final output or we've reached a maximum number of trees.
                 For more on Gradient Boosting, go over [this article](https://towardsdatascience.com/understanding-gradient-boosting-machines-9be756fe76ab). 
                 ''')
-        st.image("Streamlit Data\Images\\boosting.png",
+        st.image("Streamlit Data/Images/boosting.png",
                  caption="Source: Corporate Finance Institute",  width=700)
         st.markdown('''The model predicts that customers with *high number of customer service calls, who mostly talk during 
                 the day, and have a high day charge* are likely to churn. The other features are listed in order of importance below.
@@ -331,7 +331,7 @@ if question == 'What customers are we likely to lose soon?':
         has leaves that are *pure* (all examples belong to one class), it stops dividing.
         For more on Decision Trees, go to [this article](https://towardsdatascience.com/decision-tree-in-machine-learning-e380942a4c96). 
         ''')
-        st.image(image="Streamlit Data\Images\\rain.png",
+        st.image(image="Streamlit Data/Images/rain.png",
                  caption="Rain Forecasting Decision Tree, Source: Prince Yadav, Towards Data Science", width=500)
         st.markdown('''The model predicts that customers with *high number of customer service calls, who mostly talk during 
                 the day, and have a high day charge* are likely to churn. The other features are listed in order of importance below.
