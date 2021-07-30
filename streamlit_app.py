@@ -185,9 +185,10 @@ if question == 'What products increase the chance of buying other products?':
              If the retailer were to know hidden associations between products, he/she could put related 
              products in close proximity and give offers (a small nudge) for one of the related products.\n
              Also, note that the problem isn't the same as recommending products. Instead, this time,
-             we're trying to find out products that *go well together*.\n  
+             the store is trying to find out products that *go well together*.\n  
              The grocery store has a large dataset of transactions of their current users. Every row in the dataset, shown below,
-             contains the basket of goods that was bought by users. There are *7500 such transactions*.
+             contains the basket of goods that was bought by users. There are *7500 such transactions*. Can they find out
+             products that go well with other products using data alone?
              ''')
     st.image("Streamlit Data\Images\grocery.png", width=50)
     st.table(pd.DataFrame({"Item 1": ['burgers', 'meatballs', 'eggs'],
@@ -270,7 +271,7 @@ if question == 'What customers are we likely to lose soon?':
     st.markdown('''
              A telecom service, like AT&T, wants to know which customers are likely to switch to their competitor.
              The company has a dataset of its *3333 customers* and *17 features* per customer. The company also knows which 
-             customers have shifted to competitor services.\n
+             customers have shifted to competitor services.The dataset sample is shown below:\n
              ''')
     with st.beta_expander("See feature descriptions"):
         st.markdown('''
@@ -284,8 +285,6 @@ if question == 'What customers are we likely to lose soon?':
              - *Customer service calls* is the number of calls the customer has made to customer service.\n
              Note that international calls have separate call, charge and minutes data.
                     ''')
-
-    st.write("The dataset sample is shown below:")
 
     st.write(churn_df_sample.assign(hack='').set_index('hack'))
     st.write(
@@ -369,7 +368,7 @@ if question == 'What customers are we likely to lose soon?':
         combines them using a deterministic method like averaging.
         - *Boosting* also uses homogeneous weak learners, but instead of combining
         them, it trains them sequentially and then uses a deterministic method like averaging.
-        - *Stacking* uses heterogenous or different types of weak learners, trains
+        - *Stacking* uses heterogeneous or different types of weak learners, trains
         them in parallel and combines them by using another model (like
         logistic regression) to output a prediction.
         Note that the feature importances for stacking models are not shown below as 
@@ -477,10 +476,70 @@ if question == 'What customers are we likely to lose soon?':
 
 # CUSTOMER SEGMENTATION - CLUSTERING
 if question == 'How can we segment our customers?':
-    cluster_data_2, cluster_data_3, cluster_data_4, cluster_data_5, X_new = clustering()
-    st.markdown('## How can we segment our customers?')
-    clusters = st.selectbox("How many clusters?", [2, 3, 4, 5])
+    st.markdown('''
+                A superstore, like CostCo, wants to collaborate with a banking institution
+                like Bank of America to provide attractive offers to their customers. The
+                banking institution wants to reward it's top customers as well. Therefore,
+                both institutions have a mutual interest.\n
+                The banking institution has a dataset consisting of the credit information
+                of the mutual consumers of the two companies. The dataset has *8590* consumers and
+                *17 different credit information* on each user. Can the institution segment its 
+                customers based on the data provided?
+                ''')
+    with st.beta_expander("See feature descriptions"):
+        st.markdown('''
+                
+                - BALANCE : Balance amount left in their account to make purchases
+                - BALANCEFREQUENCY : How frequently the balance is updated; score between 0 and 1 (1 = frequently updated, 0 = not frequently updated)
+                - PURCHASES : Value of purchases made
+                - ONEOFFPURCHASES : Maximum purchase amount done in one go
+                - INSTALLMENTSPURCHASES : Value of purchase done in installment
+                - CASHADVANCE : Cash in advance given by the user
+                - PURCHASESFREQUENCY : How frequently the purchases are being made, score between 0 and 1 (1 = frequently purchased, 0 = not frequently purchased)
+                - ONEOFFPURCHASESFREQUENCY : How frequently large one-off purchases are happening (1 = frequently purchased, 0 = not frequently purchased)
+                - PURCHASESINSTALLMENTSFREQUENCY : How frequently purchases in installments are being done (1 = frequently done, 0 = not frequently done)
+                - CASHADVANCEFREQUENCY : How frequently the cash in advance is being paid
+                - CASHADVANCETRX : Number of transactions made with "cash in advance"
+                - PURCHASESTRX : Number of purchase transactions made
+                - CREDITLIMIT : Limit of credit card for user
+                - PAYMENTS : Amount of payment done by user
+                - MINIMUM_PAYMENTS : Minimum amount of payments made by user
+                - PRCFULLPAYMENT : Percent of full payment paid by user
+                - TENURE : Tenure of credit card service
+                 ''')
 
+    cluster_data_2, cluster_data_3, cluster_data_4, cluster_data_5, X_new = clustering()
+    st.write(cluster_data_2.drop("cluster_id", axis=1).head())
+    st.markdown('## How can we segment our customers?')
+    st.markdown('''
+             This problem can be treated as a *clustering problem* - a problem where we try to
+             group similar data points to make heterogeneous clusters. One can imagine a 2d graph
+             where the points are separated into two clearly defined clusters.\n
+             In real life, the problem is more complicated. The data is usually multidimensional
+             and thus cannot be separated based on a simple visual analysis, as in 3 dimensions or less.
+             The data is usually also very large and may not be perfectly separable into distinct clusters.
+             Additionally, clustering is an unsupervised problem (no information is given to the model
+             to let it know if it has gotten the answer right), is entirely based on the distribution
+             of the data and is inaccurate in most cases.\n
+             ### K-Means Clustering can be used to cluster large, multidimensional datasets
+             While not the most efficient or easy to use clustering algorithm, *K-Means* is still very effective.
+             The general idea is:
+             - Select k clusters based on domain knowledge e.g. in our case, the banking institution says that
+             most customers are usually in 3 segments - low, medium and high risk.
+             - Randomly initialize k centroids, and assign each data point to the closest centroid. Thus, initial
+             random k clusters are formed.
+             - Select the whole cluster and find its average point. This is the new centroid.
+             - Assign the points to the new centroid. If points have moved from one cluster to another,
+             repeat the above process.
+             We usually stop after a set number of iterations or until the points do not move to another 
+             cluster. See the video below for a visual example.
+             ''')
+    st.video("https://www.youtube.com/watch?v=5I3Ei69I40s")
+    st.markdown('''
+                The cluster number can be selected below and the results of the clustering can be visualized using the
+                *Principal Components* graph and scatter graph. You'll notice that 2 to 3 clusters usually work best.
+                ''')
+    clusters = st.selectbox("How many clusters?", [2, 3, 4, 5])
     if clusters == 2:
         cluster_data = cluster_data_2
     elif clusters == 3:
@@ -489,23 +548,48 @@ if question == 'How can we segment our customers?':
         cluster_data = cluster_data_4
     elif clusters == 5:
         cluster_data = cluster_data_5
+    st.markdown('''
+                *Principal Component Analysis* or PCA is a dimensionality reduction technique 
+                that transofrms a large set of features into less features that still 
+                contains most of the information in the large set. While the statistics is a 
+                bit complicated, it is fairly easy to [calculate](https://builtin.com/data-science/step-step-explanation-principal-component-analysis)
+                and is explained in more detail [here](https://www.youtube.com/watch?v=FgakZw6K1QQ).\n
+                We've used *2 Principal Components* that allow us to visualize all 17 features on 2 dimensions
+                while retaining *65.31% variance* of the underlying data (graph on bottom left). You can also view the formed clusters on any two of your preferred features
+                using the options below.
+                ''')
     colc, cold = st.beta_columns(2)
-    x = colc.selectbox(label="Select X axis", options=cluster_data.columns)
-    y = cold.selectbox(label="Select Y axis", options=cluster_data.columns)
+    x = colc.selectbox(label="Select X axis",
+                       options=cluster_data.drop("cluster_id", axis=1).columns)
+    y = cold.selectbox(label="Select Y axis", options=cluster_data.drop(
+        "cluster_id", axis=1).columns.sort_values(ascending=False))
 
     fig, ax = plt.subplots(figsize=(7, 6))
     ax = sns.scatterplot(x=X_new[:, 0], y=X_new[:, 1],
-                         hue=cluster_data.cluster_id.values, palette="husl").set_title('Principal Components')
+                         hue=cluster_data.cluster_id.values, palette="pastel").set_title('Principal Components')
     buf = BytesIO()
     fig.savefig(buf, format="png")
+    st.info("The different colors represent different clusters")
+
     colc.image(buf)
+    st.markdown('''
+                
+                ''')
 
     fig2, ax2 = plt.subplots(figsize=(7, 6))
     ax2 = sns.scatterplot(data=cluster_data, x=x, y=y,
-                          hue=cluster_data.cluster_id.values, palette="husl")
+                          hue=cluster_data.cluster_id.values, palette="pastel")
     buf2 = BytesIO()
     fig2.savefig(buf2, format="png")
     cold.image(buf2)
+    st.write('''
+             What do these clusters represent? Let's take a look at the Credit Limit vs Purchases graph for
+             clustering with 2 and 3 clusters.\n
+             For 2 clusters, the model has clustered customers with low credit card usage in
+                one cluster and higher usage in another cluster.
+                For 3 clusters, the model has put customers with unusually high amounts of purchases
+                and credit limits in one cluster and customers with very low amounts in another.
+             ''')
 
 
 # CUSTOMER SEGMENTATION - RFM
@@ -519,6 +603,7 @@ if question == 'Who are our most important customers?':
              ''')
     st.table(pd.DataFrame({"InvoiceNo": [536365, 536362, 536323], "CustomerID": [2132, 2134, 1123], "StockCode": [
              123, 145, 121], "Quantity": [2, 6, 2], "UnitPrice": [51.6, 212.5, 12.4], "InvoiceDate": ["1/12/2010", "6/12/2010", "7/12/2010"]}))
+    st.write("Can the e-commerce firm categorize their customers and find out the most important segments?")
     st.markdown('''
              ### RFM Analysis can help find interesting customer segments.
              RFM stands for **Recency, Frequency and Monetary** value analysis. What do these mean?
