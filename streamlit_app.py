@@ -12,6 +12,7 @@ from sklearn import metrics
 import os
 from sklearn.model_selection import train_test_split
 import eli5
+from PIL import Image
 
 
 @st.cache(allow_output_mutation=True)
@@ -94,8 +95,7 @@ st.set_page_config(
     layout="wide",
     initial_sidebar_state="expanded"
 )
-
-st.image("Streamlit Data/Images/color_logo.png", width=150)
+st.image(Image.open("Streamlit Data/Images/color_logo.png"), width=150)
 st.markdown("# Impactful Retail Analytics")
 
 st.markdown("""
@@ -127,9 +127,10 @@ if question == 'What products do we recommend to our users?':
     st.write("A bookseller, just like Barnes & Nobles, wants to recommend their users new books based on their favorite books. All they have is a very rich dataset of their many users and their book preferences.")
 
     st.markdown("The dataset contains approximately *5812 books* and *15,797 users*. Below, we have 10 rows from the dataset. The ratings are on a scale of 0-10 with 0 being the lowest rating.  How can they make intelligent book recommendations?")
-    st.image("Streamlit Data/Images/book.png", width=50)
+    st.image(Image.open("Streamlit Data/Images/book.png"), width=50)
+
     rating_crosstab, merged_df_tr, coss_mat = recommendation_engine()
-    st.table(merged_df_tr[["Book", "User-ID", "Book-Rating"]]
+    st.write(merged_df_tr[["Book", "User-ID", "Book-Rating"]]
              [20:30].assign(hack='').set_index('hack'))
 
     st.markdown("### Recommendation Systems are the answer!")
@@ -155,24 +156,28 @@ if question == 'What products do we recommend to our users?':
                     spaces such as our user ratings (imagine every user is an axis). Thus Cosine Similarity better classifies similar books compared to Euclidean Distance.
                     To learn more, go to this [article](https://www.machinelearningplus.com/nlp/cosine-similarity/).
                     ''')
-        st.image("Streamlit Data/Images/cosine-similarity.png", width=500)
+        st.image(Image.open(
+            "Streamlit Data/Images/cosine-similarity.png"), width=500)
+
     search = st.selectbox(label="Select a book to generate top 3 recommendations",
                           options=list(merged_df_tr["Book"][random_no:random_no+100]), help="100 books are randomly selected for the selection pool")
-    search = merged_df_tr.loc[merged_df_tr["Book"]
-                              == search, "ISBN"].values[0]
-    # with the ISBN found, we can now continue with the original method
-    col_idx = rating_crosstab.columns.get_loc(search)
-    corr_specific = coss_mat[col_idx]
-    top_items = pd.DataFrame({'corr_specific': corr_specific, 'ID': rating_crosstab.columns})\
-        .sort_values('corr_specific', ascending=False)\
-        .head(10)
-    top_items = top_items.merge(merged_df_tr[[
-                                "Book-Title", "Book-Author", "Book", "ISBN"]].drop_duplicates(), left_on="ID", right_on="ISBN", how="left")
-    common_items = set(merged_df_tr.loc[merged_df_tr["Book-Title"] == top_items.iloc[0, 2], "User-ID"].sort_values(
-    )).intersection(set(merged_df_tr.loc[merged_df_tr["Book-Title"] == top_items.iloc[1, 2], "User-ID"].sort_values()))
-    similar = ", ".join(top_items["Book"][1:4].values.tolist())
-    # st.write("Books similar to", top_items["Book"][0], "are:")
-    st.table(top_items["Book"][1:4])
+    submit_rec = st.button("Submit")
+    if submit_rec:
+        search = merged_df_tr.loc[merged_df_tr["Book"]
+                                  == search, "ISBN"].values[0]
+        # with the ISBN found, we can now continue with the original method
+        col_idx = rating_crosstab.columns.get_loc(search)
+        corr_specific = coss_mat[col_idx]
+        top_items = pd.DataFrame({'corr_specific': corr_specific, 'ID': rating_crosstab.columns})\
+            .sort_values('corr_specific', ascending=False)\
+            .head(10)
+        top_items = top_items.merge(merged_df_tr[[
+                                    "Book-Title", "Book-Author", "Book", "ISBN"]].drop_duplicates(), left_on="ID", right_on="ISBN", how="left")
+        common_items = set(merged_df_tr.loc[merged_df_tr["Book-Title"] == top_items.iloc[0, 2], "User-ID"].sort_values(
+        )).intersection(set(merged_df_tr.loc[merged_df_tr["Book-Title"] == top_items.iloc[1, 2], "User-ID"].sort_values()))
+        similar = ", ".join(top_items["Book"][1:4].values.tolist())
+        # st.write("Books similar to", top_items["Book"][0], "are:")
+        st.write(top_items["Book"][1:4])
 
 
 # MARKET BASKET ANALYSIS
@@ -190,8 +195,9 @@ if question == 'What products increase the chance of buying other products?':
              contains the basket of goods that was bought by users. There are *7500 such transactions*. Can they find out
              products that go well with other products using data alone?
              ''')
-    st.image("Streamlit Data/Images/grocery.png", width=50)
-    st.table(pd.DataFrame({"Item 1": ['burgers', 'meatballs', 'eggs'],
+    st.image(Image.open("Streamlit Data/Images/grocery.png"), width=50)
+
+    st.write(pd.DataFrame({"Item 1": ['burgers', 'meatballs', 'eggs'],
                            "Item 2": ['chutney', 'salsa', 'ketchup'],
                            "Item 3": ['turkey', 'avocado', 'peaches']}).assign(hack='').set_index('hack'))
     st.markdown(
@@ -235,32 +241,35 @@ if question == 'What products increase the chance of buying other products?':
 
     chosen = rules[(rules['lift'] >= lift) & (rules['confidence'] >= conf) & (
         rules['support'] >= support)].sort_values("lift", ascending=False).head(20)
-    chosen_expander = st.beta_expander(
-        label='See generated association rules table and learn more about association rules')
-    with chosen_expander:
-        st.table(chosen.assign(hack='').set_index('hack'))
-        st.markdown('''
-                    You'll notice that the table above also has a conviction value. To learn more about association rules, Apriori (and conviction) go this [link](https://en.wikipedia.org/wiki/Association_rule_learning)
-                    and this [link](https://searchbusinessanalytics.techtarget.com/definition/association-rules-in-data-mining).
-                    ''')
 
-    def likelihood(x):
-        if x.iloc[0, 6] > 2:
-            criteria = "extremely likely"
-        elif x.iloc[0, 6] > 1.5:
-            criteria = "highly likely"
-        elif x.iloc[0, 6] > 1:
-            criteria = "ikely"
-        return criteria
+    submit_mba = st.button("Submit")
+    if submit_mba:
+        chosen_expander = st.beta_expander(
+            label='See generated association rules table and learn more about association rules')
+        with chosen_expander:
+            st.write(chosen.assign(hack='').set_index('hack'))
+            st.markdown('''
+                        You'll notice that the table above also has a conviction value. To learn more about association rules, Apriori (and conviction) go this [link](https://en.wikipedia.org/wiki/Association_rule_learning)
+                        and this [link](https://searchbusinessanalytics.techtarget.com/definition/association-rules-in-data-mining).
+                        ''')
 
-    if chosen.empty:
-        st.write("No strong associations found")
-    elif (chosen.iloc[0, 6] <= 1):
-        st.write("No strong associations found")
-    else:
-        likelihood1 = likelihood(chosen)
-        st.markdown(
-            f"If a consumer buys **{chosen.iloc[0, 0]}** then he/she is also **{likelihood1}** to buy **{chosen.iloc[0, 1]}**.")
+        def likelihood(x):
+            if x.iloc[0, 6] > 2:
+                criteria = "extremely likely"
+            elif x.iloc[0, 6] > 1.5:
+                criteria = "highly likely"
+            elif x.iloc[0, 6] > 1:
+                criteria = "ikely"
+            return criteria
+
+        if chosen.empty:
+            st.write("No strong associations found")
+        elif (chosen.iloc[0, 6] <= 1):
+            st.write("No strong associations found")
+        else:
+            likelihood1 = likelihood(chosen)
+            st.markdown(
+                f"If a consumer buys **{chosen.iloc[0, 0]}** then he/she is also **{likelihood1}** to buy **{chosen.iloc[0, 1]}**.")
 
 # CHURN ANALYSIS
 if question == 'What customers are we likely to lose soon?':
@@ -318,8 +327,9 @@ if question == 'What customers are we likely to lose soon?':
                 reduce loss until we've improved the final output or we've reached a maximum number of trees.
                 For more on Gradient Boosting, go over [this article](https://towardsdatascience.com/understanding-gradient-boosting-machines-9be756fe76ab). 
                 ''')
-        st.image("Streamlit Data/Images/boosting.png",
-                 caption="Source: Corporate Finance Institute",  width=700)
+
+        st.image(Image.open("Streamlit Data/Images/boosting.png"),
+                 caption="Source: Corporate Finance Institute", width=700)
         st.markdown('''The model predicts that customers with *high number of customer service calls, who mostly talk during 
                 the day, and have a high day charge* are likely to churn. The other features are listed in order of importance below.
                 Note that the values are not important for our analysis but the rankings are.
@@ -331,7 +341,8 @@ if question == 'What customers are we likely to lose soon?':
         has leaves that are *pure* (all examples belong to one class), it stops dividing.
         For more on Decision Trees, go to [this article](https://towardsdatascience.com/decision-tree-in-machine-learning-e380942a4c96). 
         ''')
-        st.image(image="Streamlit Data/Images/rain.png",
+
+        st.image(Image.open("Streamlit Data/Images/rain.png"),
                  caption="Rain Forecasting Decision Tree, Source: Prince Yadav, Towards Data Science", width=500)
         st.markdown('''The model predicts that customers with *high number of customer service calls, who mostly talk during 
                 the day, and have a high day charge* are likely to churn. The other features are listed in order of importance below.
@@ -353,8 +364,8 @@ if question == 'What customers are we likely to lose soon?':
                  ''')
     elif model == rf:
         st.markdown('''
-        *Random Forest Classifiers* train multiple decision trees (Pick Decision Tree Classifier for a thorough explanation).
-        on subsets of the observations and features and then combines them for a more accurate prediction. Even though
+        *Random Forest Classifiers* train multiple decision trees (Pick Decision Tree Classifier for a thorough explanation)
+        on subsets of the observations and features and then combine them for a more accurate predictions. Even though
         they're not complicated to understand, they're often very accurate and robust.\n
         The model predicts that customers with *high number of customer service calls, who mostly talk during 
                 the day, and have a high day charge* are likely to churn. The other features are listed in order of importance below.
@@ -406,7 +417,7 @@ if question == 'What customers are we likely to lose soon?':
                         general level e.g. *Permutation Feature Importance (PFI)* looks at how much the score (R-Squared, F-1 score, etc)
                         decreases when a feature is not available. The values below are generated using [PFI and the ELI5 libary](https://eli5.readthedocs.io/en/latest/blackbox/permutation_importance.html).
                         ''')
-        st.table(pfi_table)
+        st.write(pfi_table)
     # print a confusion matrix using test data
     y_pred = model.predict(X_test)
 
@@ -461,17 +472,16 @@ if question == 'What customers are we likely to lose soon?':
     customer_service = col9.number_input(
         "Customer Service Calls", min_value=0, step=1)
 
-    test_arr = np.array([[acc_length, int_plan, vml_plan, num_vm, total_day, 137, 21.95, 228.5, 83, 19.42, 20, 11, 9.4,
-                          12.7, 6, 3.43, customer_service]])
-
-    if sum([acc_length, int_plan, vml_plan, num_vm, total_day, customer_service]) == 0:
-        st.empty()
-    elif gbc.predict(scaler.transform(test_arr))[0] == False:
-        st.markdown(
-            "The model predicts the customer is **unlikely** to switch to the competitor (given the dataset)")
-    else:
-        st.markdown(
-            "The model predicts the customer is **likely** to switch to the competitor (given the dataset)")
+    submit_churn = st.button("Submit")
+    if submit_churn:
+        test_arr = np.array([[acc_length, int_plan, vml_plan, num_vm, total_day, 137, 21.95, 228.5, 83, 19.42, 20, 11, 9.4,
+                              12.7, 6, 3.43, customer_service]])
+        if gbc.predict(scaler.transform(test_arr))[0] == False:
+            st.markdown(
+                "The model predicts the customer is **unlikely** to switch to the competitor (given the dataset)")
+        elif gbc.predict(scaler.transform(test_arr))[0] == True:
+            st.markdown(
+                "The model predicts the customer is **likely** to switch to the competitor (given the dataset)")
 
 
 # CUSTOMER SEGMENTATION - CLUSTERING
@@ -601,7 +611,7 @@ if question == 'Who are our most important customers?':
              they're likely to lose and which customers require a little nudge to purchase more. They have a
              rich dataset of transactions but no customer information (other than customer ID). A small sample is shown below:
              ''')
-    st.table(pd.DataFrame({"InvoiceNo": [536365, 536362, 536323], "CustomerID": [2132, 2134, 1123], "StockCode": [
+    st.write(pd.DataFrame({"InvoiceNo": [536365, 536362, 536323], "CustomerID": [2132, 2134, 1123], "StockCode": [
              123, 145, 121], "Quantity": [2, 6, 2], "UnitPrice": [51.6, 212.5, 12.4], "InvoiceDate": ["1/12/2010", "6/12/2010", "7/12/2010"]}))
     st.write("Can the e-commerce firm categorize their customers and find out the most important segments?")
     st.markdown('''
@@ -616,7 +626,7 @@ if question == 'Who are our most important customers?':
              applicable to the business we're dealing with. Let's take a look at the results (a small sample, at least) of our analysis below:
              
              ''')
-    st.table(rfm.rename(columns={"rankR": "Rank Recency", "rankF": "Rank Frequency", "rankM": "Rank Monetary", "Customer_Segment": "Customer Segment"}).dropna(
+    st.write(rfm.rename(columns={"rankR": "Rank Recency", "rankF": "Rank Frequency", "rankM": "Rank Monetary", "Customer_Segment": "Customer Segment"}).dropna(
     ).drop_duplicates("Customer Segment").set_index('Name'))
     st.markdown('''
                 From the table above, we can see the 3 metrics but also some other columns we haven't looked at. The *Rank*
@@ -650,7 +660,7 @@ if question == "References and Further Reading":
                 - [RFM Analysis Dataset on Kaggle](https://www.kaggle.com/roshansharma/online-retail)\n
                 For more information on Machine Learning, Statistics and Retail Analytics, check out these great resources:
                 - [Statquest for Statistics and ML](https://www.youtube.com/user/joshstarmer)
-                - [3Blue1Brown for Math](https://www.youtube.com/user/3blue1brown)]
+                - [3Blue1Brown for Math](https://www.youtube.com/channel/UCYO_jab_esuFRV4b17AJtAw)
                 - [Sentdex for ML Coding Tutorials](https://www.youtube.com/user/sentdex)
                 - [Google Cloud Next'19 Keynote on Retail and AI](https://www.youtube.com/watch?v=pKEmQ1VMxsM)
                 - [DataRobot APAC Data Science's Presentation on Data Science in Retail](https://www.youtube.com/watch?v=PThNpfd3waE)\n

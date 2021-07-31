@@ -7,3 +7,4 @@ seaborn
 joblib
 streamlit
 scikit_learn
+pillow
