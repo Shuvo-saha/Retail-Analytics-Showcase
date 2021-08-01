@@ -99,7 +99,7 @@ st.set_page_config(
 main1, main2, main3 = st.beta_columns([1, 2, 1])
 with main2:
     st.image(Image.open("Streamlit Data/Images/color_logo.png"), width=150)
-    st.markdown("# Impactful Retail Analytics")
+    st.title("Impactful Retail Analytics")
     st.markdown("""
                 The retail world generates **massive amounts of data** from consumers and the interactions they have. 
                 All that data can lead to **better customer targeting, higher 
@@ -107,7 +107,8 @@ with main2:
                 To better understand how data can help retail businesses, we've created this **fully-fledged, interactive retail analytics showcase**. 
                 The website will guide you through scenarios for a common retail businesses, analyze their existing data and answer important 
                 business questions.\n 
-                You can select any question from the box below to continue.
+                [Contact us](now@intelligentmachin.es) to learn more about
+                how data can change retail businesses. You can select any question from the box below to continue. 
                 """)
     # RECOMMENDATIONS
 
@@ -580,8 +581,7 @@ with main2:
                     bit complicated, it is fairly easy to [calculate](https://builtin.com/data-science/step-step-explanation-principal-component-analysis)
                     and is explained in more detail [here](https://www.youtube.com/watch?v=FgakZw6K1QQ).\n
                     We've used *2 Principal Components* that allow us to visualize all 17 features on 2 dimensions
-                    while retaining *65.31% variance* of the underlying data (graph on bottom left). You can also view the formed clusters on any two of your preferred features
-                    using the options below.
+                    while retaining *65.31% variance* of the underlying data (graph on bottom left).
                     ''')
         # st, cold = st.beta_columns(2)
         fig, ax = plt.subplots(figsize=(7, 6))
@@ -592,6 +592,8 @@ with main2:
         st.info("The different colors represent different clusters")
 
         st.image(buf)
+        st.write('''You can also visualize the formed clusters on any two of your preferred features
+                    using the options below.''')
         x = st.selectbox(label="Select X axis",
                          options=cluster_data.drop("cluster_id", axis=1).columns)
         y = st.selectbox(label="Select Y axis", options=cluster_data.drop(
