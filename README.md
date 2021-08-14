@@ -8,6 +8,14 @@ This **fully-fledged, interactive retail analytics showcase** dives into:
 You can view the web app [here](https://retail-analytics-showcase.herokuapp.com/)
 
 ---
+## Data Size & Algorithms
+- Recommendation System: Book ratings for approximately *5812 books* by *15,797 users*, cosine similarity based *Item-Item Collaborative Filtering*
+- Market Basket Analysis: *7500* transactions at a grocery store, *Association Rules Analysis* using *Apriori*
+- Churn Prediction: *3333 customers* and *17 features* per customer for a telecom operator, multiple classification models including *Gradient Boosting Classifier* (81.56% F1-Score), *Decision Trees* ( F1-Score), *Logistic Regression* ( F1-Score), *Random Forest Classifier* ( F1-Score) and *Stacking* ( F1-Score)
+- Clustering: *8590* consumers and *17 different credit information* on each user of a financial institution, *K-Means Clustering* and *Principal Component Analysis*
+- Customer Segmentation: Transactions covering *4380 Customers* and *4207 Products* for an e-commerce platform, *Recency, Frequency and Monetary Analysis*
+
+---
 ## References
 This website wouldn't have been possible without the helpful resources below:
 - [Book Recommendations Dataset on Kaggle](https://www.kaggle.com/saurabhbagchi/books-dataset)
