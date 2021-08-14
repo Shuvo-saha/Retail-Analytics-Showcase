@@ -5,7 +5,7 @@ This **fully-fledged, interactive retail analytics showcase** dives into:
 - The algorithms driving modern retail analytics
 - How effective these algorithms can be in answering those questions 
 
-You can view the app [here](https://retail-analytics-showcase.herokuapp.com/)
+You can view the web app [here](https://retail-analytics-showcase.herokuapp.com/)
 
 ---
 ## References
