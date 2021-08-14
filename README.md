@@ -11,14 +11,14 @@ This website wouldn't have been possible without the helpful resources below:
 - [Churn Analysis Dataset on Kaggle](https://www.kaggle.com/sandipdatta/customer-churn-analysis)
 - [Clustering Dataset on Kaggle](https://www.kaggle.com/ankits29/credit-card-customer-clustering-with-explanation)
 - [RFM Analysis Dataset on Kaggle](https://www.kaggle.com/roshansharma/online-retail)\n
----
+
 For more information on Machine Learning, Statistics and Retail Analytics, check out these great resources:
 - [Statquest for Statistics and ML](https://www.youtube.com/user/joshstarmer)
 - [3Blue1Brown for Math](https://www.youtube.com/channel/UCYO_jab_esuFRV4b17AJtAw)
 - [Sentdex for ML Coding Tutorials](https://www.youtube.com/user/sentdex)
 - [Google Cloud Next'19 Keynote on Retail and AI](https://www.youtube.com/watch?v=pKEmQ1VMxsM)
 - [DataRobot APAC Data Science's Presentation on Data Science in Retail](https://www.youtube.com/watch?v=PThNpfd3waE)\n
----
+
 This website was built using Python and the following libraries:
 - [Streamlit] (https://docs.streamlit.io/en/stable/index.html)
 - [ELI5](https://eli5.readthedocs.io/en/latest/overview.html)
