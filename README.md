@@ -20,7 +20,7 @@ For more information on Machine Learning, Statistics and Retail Analytics, check
 - [DataRobot APAC Data Science's Presentation on Data Science in Retail](https://www.youtube.com/watch?v=PThNpfd3waE) 
 
 This website was built using Python and the following libraries:
-- [Streamlit] (https://docs.streamlit.io/en/stable/index.html)
+- [Streamlit](https://docs.streamlit.io/en/stable/index.html)
 - [ELI5](https://eli5.readthedocs.io/en/latest/overview.html)
 - [Scikit-Learn](https://scikit-learn.org/)
 - [Matplotlib](https://matplotlib.org/)
