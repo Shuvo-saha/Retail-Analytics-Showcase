@@ -321,8 +321,8 @@ with main2:
 
         # This is PFI, tkae  the text, format as df then sort,rename col and add color style
         # selection for different models
-        model = st.selectbox(label="Pick classification algorithm", options=[
-            gbc, dt, lr, rf, stack], format_func=model_formatter)
+        model = st.selectbox(label="Pick classification algorithm", options=
+                             [gbc, dt, lr, rf, stack], format_func=model_formatter)
         y_pred = model.predict(X_test)
         if model == gbc:
 
