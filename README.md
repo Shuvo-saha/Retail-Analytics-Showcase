@@ -26,5 +26,6 @@ This website was built using Python and the following libraries:
 - [Scikit-Learn](https://scikit-learn.org/)
 - [Matplotlib](https://matplotlib.org/)
 - [Seaborn](https://seaborn.pydata.org/)
-- [Pandas](https://pandas.pydata.org/)
-- Deployment via [Heroku](https://www.heroku.com/)
+- [Pandas](https://pandas.pydata.org/) 
+
+Deployment via [Heroku](https://www.heroku.com/)
