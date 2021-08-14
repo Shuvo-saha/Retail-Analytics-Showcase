@@ -84,7 +84,10 @@ def rand_gen(x, y):
 
 
 def model_formatter(x):
-    word = re.sub(r"(\w)([A-Z])", r"\1 \2", type(x).__name__)
+    if x:
+        word = re.sub(r"(\w)([A-Z])", r"\1 \2", type(x).__name__)
+    else:
+        word = "Gradient Boosting Classifier"
     return word
 
 
@@ -151,8 +154,8 @@ with main2:
                         The exact process and math is a bit complicated but is explained clearly in this [article](https://towardsdatascience.com/comprehensive-guide-on-item-based-recommendation-systems-d67e40e2b75d).
                         ''')
         st.markdown(''' 
-                    We've gone ahead and trained an Item-Item Collaborative Filtering model using the full dataset. The model will take the book name and then using the magic of [similarity measures](https://en.wikipedia.org/wiki/Similarity_measure#:~:text=In%20statistics%20and%20related%20fields,the%20similarity%20between%20two%20objects.),
-                    (we've used *Cosine Similarity* for our analysis) it recommends the closest 3 books that you might like.  You can even search up the book names and check if we've got it right 😉
+                    I've gone ahead and trained an Item-Item Collaborative Filtering model using the full dataset. The model will take the book name and then using the magic of [similarity measures](https://en.wikipedia.org/wiki/Similarity_measure#:~:text=In%20statistics%20and%20related%20fields,the%20similarity%20between%20two%20objects.),
+                    (I've used *Cosine Similarity* for my analysis) it recommends the closest 3 books that you might like.  You can even search up the book names and check if I've got it right 😉
                     ''')
         with st.expander("Learn more about Cosine Similarity"):
             st.markdown('''
@@ -313,7 +316,7 @@ with main2:
             classes rather than output a numeric value. In our case, we have two classes - churned
             and not churned.\n
             There are many classification techniques from simple linear methods like *logistic
-            regression* to more complex methods like *neural networks*. We've picked 5 common models for
+            regression* to more complex methods like *neural networks*. I've picked 5 common models for
             this problem set. Pick any model below and we'll show you how it works, and how it performs.
             
             ''')
@@ -334,7 +337,7 @@ with main2:
                     decision trees (select Decision
                     Tree Classifier for a thorough explanation). Then the trees are added one at a time and
                     loss is reduced gradually using a *gradient descent procedure*. More trees are added to
-                    reduce loss until we've improved the final output or we've reached a maximum number of trees.
+                    reduce loss until the final output is improved or the model has reached a maximum number of trees.
                     For more on Gradient Boosting, go over [this article](https://towardsdatascience.com/understanding-gradient-boosting-machines-9be756fe76ab). 
                     ''')
 
@@ -579,7 +582,7 @@ with main2:
                     contains most of the information in the large set. While the statistics is a 
                     bit complicated, it is fairly easy to [calculate](https://builtin.com/data-science/step-step-explanation-principal-component-analysis)
                     and is explained in more detail [here](https://www.youtube.com/watch?v=FgakZw6K1QQ).\n
-                    We've used *2 Principal Components* that allow us to visualize all 17 features on 2 dimensions
+                    I've used *2 Principal Components* that allow us to visualize all 17 features on 2 dimensions
                     while retaining *65.31% variance* of the underlying data (graph on bottom left).
                     ''')
         # st, cold = st.columns(2)
@@ -651,7 +654,7 @@ with main2:
                     columns are simple rankings based on the measures. The *Customer Segment* column is the ultimate result of the
                     analysis. Some interesting segments are:\n
                     - *Champions* are your best customers, those who buy often, are engaged, and spend a lot. They are the most
-                    valuable customers, so we advice you always keep an eye on them!
+                    valuable customers, so I advice you always keep an eye on them!
                     - *Potential Loyalists* are recent customers who spend a lot. We want to increase their purchase frequency
                     so loyalty programs can help here.
                     - *At Risk* are customers who purchase often and spent a lot but haven't purchased recently. Get them back
