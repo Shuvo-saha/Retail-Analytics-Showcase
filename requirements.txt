@@ -1,7 +1,7 @@
 pip
 matplotlib
 eli5
-pandas
+pandas==1.2.4
 numpy
 seaborn
 joblib
