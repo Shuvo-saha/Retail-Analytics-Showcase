@@ -430,7 +430,7 @@ with main2:
                             general level e.g. *Permutation Feature Importance (PFI)* looks at how much the score (R-Squared, F-1 score, etc)
                             decreases when a feature is not available. The values below are generated using [PFI and the ELI5 libary](https://eli5.readthedocs.io/en/latest/blackbox/permutation_importance.html).
                             ''')
-            st.write(pfi_table)
+            st.table(pfi_table)
         # print a confusion matrix using test data
         y_pred = model.predict(X_test)
 
