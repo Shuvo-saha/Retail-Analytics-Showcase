@@ -16,7 +16,7 @@ You can view the web app [here](https://retail-analytics-showcase.herokuapp.com/
   -  *Decision Tree* (71.57% F1-Score)
   -  *Logistic Regression* (25.95% F1-Score)
   -  *Random Forest Classifier* (80.9% F1-Score)
-  -  *Stacking Classifier* (85.25% F1-Score)
+  -  *Stacking Classifier* with Logistic Regression, Decision Tree and Random Forest (85.25% F1-Score)
 - Clustering: *8590* consumers and *17 different credit information* on each user of a financial institution, *K-Means Clustering* and *Principal Component Analysis*
 - Customer Segmentation: Transactions covering *4380 Customers* and *4207 Products* for an e-commerce platform, *Recency, Frequency and Monetary Analysis*
 
