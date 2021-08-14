@@ -96,7 +96,7 @@ st.set_page_config(
     initial_sidebar_state="expanded"
 )
 
-main1, main2, main3 = st.beta_columns([1, 2, 1])
+main1, main2, main3 = st.columns([1, 2, 1])
 with main2:
     st.image(Image.open("Streamlit Data/Images/color_logo.png"), width=150)
     st.title("Impactful Retail Analytics")
@@ -224,7 +224,7 @@ with main2:
                     e.g. a lift score of 3 for diapers -> milk means that if the customer had a 30% likelihood of buying milk on any
                     day, that likelihood is now 90% (30*3).\n  
                     ''')
-        # _, col_im, _ = st.beta_columns([1, 1, 1])
+        # _, col_im, _ = st.columns([1, 1, 1])
         st.image("Streamlit Data/Images/equations-mba.png",
                  caption="Support, Confidence and Lift Formulas", width=500)
 
@@ -237,7 +237,7 @@ with main2:
                     the confidence (to measure reliability) and popularity.
                     ''')
 
-        # col1, col2, col3 = st.beta_columns(3)
+        # col1, col2, col3 = st.columns(3)
         st.markdown(
             "## **Use the cutoff values below to generate product associations.**")
         lift = st.slider(
@@ -436,7 +436,7 @@ with main2:
         # Plot conf matrix and f1 score in an expander
         with st.beta_expander(
                 label='See classification accuracy and other metrics for the selected model'):
-            # col_i, col_ii = st.beta_columns([2, 5])
+            # col_i, col_ii = st.columns([2, 5])
             conf_fig = plt.figure(figsize=(5, 4))
             conf_matrix = metrics.confusion_matrix(y_pred, y_test)
             sns.heatmap(conf_matrix, annot=True, xticklabels=[
@@ -472,7 +472,7 @@ with main2:
         st.info('''Be aware that none of the models have 100% accuracy (especially Logistic Regression) and thus may output
                 wrong predictions.''')
         # make 6 different columns
-        # col4, col5, col6, col7, col8, col9 = st.beta_columns(6)
+        # col4, col5, col6, col7, col8, col9 = st.columns(6)
 
         acc_length = st.number_input("Account length", min_value=0, step=1)
         int_plan = st.number_input(
@@ -582,7 +582,7 @@ with main2:
                     We've used *2 Principal Components* that allow us to visualize all 17 features on 2 dimensions
                     while retaining *65.31% variance* of the underlying data (graph on bottom left).
                     ''')
-        # st, cold = st.beta_columns(2)
+        # st, cold = st.columns(2)
         fig, ax = plt.subplots(figsize=(7, 6))
         ax = sns.scatterplot(x=X_new[:, 0], y=X_new[:, 1],
                              hue=cluster_data.cluster_id.values, palette="pastel").set_title('Principal Components')
