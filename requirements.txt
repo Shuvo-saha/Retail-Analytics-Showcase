@@ -5,6 +5,6 @@ pandas
 numpy
 seaborn
 joblib
-streamlit
+streamlit==0.83
 scikit_learn
 pillow

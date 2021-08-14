@@ -84,10 +84,7 @@ def rand_gen(x, y):
 
 
 def model_formatter(x):
-    if x:
-        word = re.sub(r"(\w)([A-Z])", r"\1 \2", type(x).__name__)
-    else:
-        word = "Gradient Boosting Classifier"
+    word = re.sub(r"(\w)([A-Z])", r"\1 \2", type(x).__name__)
     return word
 
 
@@ -99,7 +96,7 @@ st.set_page_config(
     initial_sidebar_state="expanded"
 )
 
-main1, main2, main3 = st.columns([1, 2, 1])
+main1, main2, main3 = st.beta_columns([1, 2, 1])
 with main2:
     st.image(Image.open("Streamlit Data/Images/color_logo.png"), width=150)
     st.title("Impactful Retail Analytics")
@@ -146,7 +143,7 @@ with main2:
         st.markdown('''Using *Item-Item Collaborative Filtering*, we can understand the similarities between books. 
                     Item-item collaborative filtering is based on the similarity between items calculated using people's ratings of
                     those items. Item-item collaborative filtering was invented and used by *Amazon* in 1998. To learn more, go to And here it is in action:''')
-        with st.expander("Learn more about Item-Item Collaborative Filtering"):
+        with st.beta_expander("Learn more about Item-Item Collaborative Filtering"):
             st.markdown('''
                         Suppose that a customer, Mark, wants to purchase a book. We first look at all the books Mark has read - Harry Potter and Oliver Twist. Mark has rated both these books
                         highly. Three other users, Mathew and his brothers, also love these books and they also love Eragon. Therefore, these users rated Harry Potter, Oliver Twist and Eragon very similarly.
@@ -157,7 +154,7 @@ with main2:
                     I've gone ahead and trained an Item-Item Collaborative Filtering model using the full dataset. The model will take the book name and then using the magic of [similarity measures](https://en.wikipedia.org/wiki/Similarity_measure#:~:text=In%20statistics%20and%20related%20fields,the%20similarity%20between%20two%20objects.),
                     (I've used *Cosine Similarity* for my analysis) it recommends the closest 3 books that you might like.  You can even search up the book names and check if I've got it right 😉
                     ''')
-        with st.expander("Learn more about Cosine Similarity"):
+        with st.beta_expander("Learn more about Cosine Similarity"):
             st.markdown('''
                         A simple similarity measure is Euclidean distance or , the length of the shortest possible path between two points.\n
                         Cosine similarity is similar but it does not take size into account. Mathematically, it measures the cosine of the angle 
@@ -175,9 +172,9 @@ with main2:
             search = merged_df_tr.loc[merged_df_tr["Book"]
                                       == search, "ISBN"].values[0]
             # with the ISBN found, we can now continue with the original method
-            col_idx = rating_crosstab.columns.get_loc(search)
+            col_idx = rating_crosstab.beta_columns.get_loc(search)
             corr_specific = coss_mat[col_idx]
-            top_items = pd.DataFrame({'corr_specific': corr_specific, 'ID': rating_crosstab.columns})\
+            top_items = pd.DataFrame({'corr_specific': corr_specific, 'ID': rating_crosstab.beta_columns})\
                 .sort_values('corr_specific', ascending=False)\
                 .head(10)
             top_items = top_items.merge(merged_df_tr[[
@@ -227,7 +224,7 @@ with main2:
                     e.g. a lift score of 3 for diapers -> milk means that if the customer had a 30% likelihood of buying milk on any
                     day, that likelihood is now 90% (30*3).\n  
                     ''')
-        # _, col_im, _ = st.columns([1, 1, 1])
+        # _, col_im, _ = st.beta_columns([1, 1, 1])
         st.image("Streamlit Data/Images/equations-mba.png",
                  caption="Support, Confidence and Lift Formulas", width=500)
 
@@ -240,7 +237,7 @@ with main2:
                     the confidence (to measure reliability) and popularity.
                     ''')
 
-        # col1, col2, col3 = st.columns(3)
+        # col1, col2, col3 = st.beta_columns(3)
         st.markdown(
             "## **Use the cutoff values below to generate product associations.**")
         lift = st.slider(
@@ -255,7 +252,7 @@ with main2:
 
         submit_mba = st.button("Submit")
         if submit_mba:
-            chosen_expander = st.expander(
+            chosen_expander = st.beta_expander(
                 label='See generated association rules table and learn more about association rules')
             with chosen_expander:
                 st.write(chosen.assign(hack='').set_index('hack'))
@@ -293,7 +290,7 @@ with main2:
                 The company has a dataset of its *3333 customers* and *17 features* per customer. The company also knows which 
                 customers have shifted to competitor services.The dataset sample is shown below:\n
                 ''')
-        with st.expander("See feature descriptions"):
+        with st.beta_expander("See feature descriptions"):
             st.markdown('''
                         - *Account length*, which is  how many days the customer has used the operator's services.
                 - *International plan*, where 0 indicates the customer is not on the plan and 1 indicates the opposite.
@@ -325,7 +322,7 @@ with main2:
         # This is PFI, tkae  the text, format as df then sort,rename col and add color style
         # selection for different models
         model = st.selectbox(label="Pick classification algorithm", 
-                             options=[dt, lr, rf, stack], format_func=model_formatter)
+                             options=[gbc, dt, lr, rf, stack], format_func=model_formatter)
         y_pred = model.predict(X_test)
         if model == gbc:
 
@@ -399,7 +396,8 @@ with main2:
             logistic regression) to output a prediction.
             Note that the feature importances for stacking models are not shown below as 
             it is difficult to calculate and may not be accurate. However, the accuracy usually
-            improves when combining multiple models (and has improved in our case as well). 
+            improves when combining multiple models (and has improved in our case as well).\n
+            We've stacked our Random Forest, Decision Tree and the Logistic Regression models for this classifier.
             ''')
 
         # if stacking classifier this doesn't work so make sure to use if function here
@@ -418,7 +416,7 @@ with main2:
             text_fi = eli5.formatters.as_dataframe.format_as_dataframe(text_fi)
             pfi_table = text_fi[['feature', 'weight']].sort_values(
                 "weight", ascending=False).rename(columns={'feature': "Features", "weight": "Weights"}).style.background_gradient(axis=0)
-            with st.expander("See explanation of feature importance"):
+            with st.beta_expander("See explanation of feature importance"):
                 st.markdown('''
                             Most machine learning models are *black-box* models. This means that they're created
                             directly from data and even the people who designed them, cannot understand how
@@ -437,9 +435,9 @@ with main2:
         y_pred = model.predict(X_test)
 
         # Plot conf matrix and f1 score in an expander
-        with st.expander(
+        with st.beta_expander(
                 label='See classification accuracy and other metrics for the selected model'):
-            # col_i, col_ii = st.columns([2, 5])
+            # col_i, col_ii = st.beta_columns([2, 5])
             conf_fig = plt.figure(figsize=(5, 4))
             conf_matrix = metrics.confusion_matrix(y_pred, y_test)
             sns.heatmap(conf_matrix, annot=True, xticklabels=[
@@ -475,7 +473,7 @@ with main2:
         st.info('''Be aware that none of the models have 100% accuracy (especially Logistic Regression) and thus may output
                 wrong predictions.''')
         # make 6 different columns
-        # col4, col5, col6, col7, col8, col9 = st.columns(6)
+        # col4, col5, col6, col7, col8, col9 = st.beta_columns(6)
 
         acc_length = st.number_input("Account length", min_value=0, step=1)
         int_plan = st.number_input(
@@ -512,7 +510,7 @@ with main2:
                     *17 different credit information* on each user. Can the institution segment its 
                     customers based on the data provided?
                     ''')
-        with st.expander("See feature descriptions"):
+        with st.beta_expander("See feature descriptions"):
             st.markdown('''
                     
                     - BALANCE : Balance amount left in their account to make purchases
@@ -585,7 +583,7 @@ with main2:
                     I've used *2 Principal Components* that allow us to visualize all 17 features on 2 dimensions
                     while retaining *65.31% variance* of the underlying data (graph on bottom left).
                     ''')
-        # st, cold = st.columns(2)
+        # st, cold = st.beta_columns(2)
         fig, ax = plt.subplots(figsize=(7, 6))
         ax = sns.scatterplot(x=X_new[:, 0], y=X_new[:, 1],
                              hue=cluster_data.cluster_id.values, palette="pastel").set_title('Principal Components')
@@ -661,7 +659,7 @@ with main2:
                     with some discounts and offers!
                     
                     ''')
-        with st.expander("Learn more about RFM analysis"):
+        with st.beta_expander("Learn more about RFM analysis"):
             st.markdown('''
                         To learn more about RFM analysis and the underlying methodologies, go to this [article](https://clevertap.com/blog/rfm-analysis/).
                         [This analysis](https://www.kaggle.com/blewitts/ecommerce-rfm-analysis) on Kaggle also goes over the other customer
