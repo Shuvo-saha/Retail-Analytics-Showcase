@@ -104,11 +104,10 @@ with main2:
                 The retail world generates **massive amounts of data** from consumers and the interactions they have. 
                 All that data can lead to **better customer targeting, higher 
                 customer satisfaction and in turn, less customer churn**. With large datasets, however, we also need to ask the right questions.\n 
-                To better understand how data can help retail businesses, we've created this **fully-fledged, interactive retail analytics showcase**. 
+                To better understand how data can help retail businesses, I've created this **fully-fledged, interactive retail analytics showcase**. 
                 The website will guide you through scenarios for a common retail businesses, analyze their existing data and answer important 
                 business questions.\n 
-                [Contact us](now@intelligentmachin.es) to learn more about
-                how data can change retail businesses. You can select any question from the box below to continue. 
+                You can select any question from the box below to continue. 
                 """)
     # RECOMMENDATIONS
 
