@@ -3,7 +3,9 @@
 This **fully-fledged, interactive retail analytics showcase** dives into:
 - The most important questions that big data and statistical learning can answer in the retail space
 - The algorithms driving modern retail analytics
-- How effective these algorithms can be in answering those questions
+- How effective these algorithms can be in answering those questions 
+
+You can view the web app [here](https://retail-analytics-showcase.herokuapp.com/)
 
 ---
 ## References
@@ -26,4 +28,6 @@ This website was built using Python and the following libraries:
 - [Scikit-Learn](https://scikit-learn.org/)
 - [Matplotlib](https://matplotlib.org/)
 - [Seaborn](https://seaborn.pydata.org/)
-- [Pandas](https://pandas.pydata.org/)
+- [Pandas](https://pandas.pydata.org/) 
+
+Deployment via [Heroku](https://www.heroku.com/)
