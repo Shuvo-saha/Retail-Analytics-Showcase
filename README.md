@@ -6,6 +6,7 @@ This **fully-fledged, interactive retail analytics showcase** dives into:
 - How effective these algorithms can be in answering those questions 
 
 You can view the app [here](https://retail-analytics-showcase.herokuapp.com/)
+
 ---
 ## References
 This website wouldn't have been possible without the helpful resources below:
