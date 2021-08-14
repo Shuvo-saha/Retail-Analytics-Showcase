@@ -1,4 +1,5 @@
 # Deep Dive into Retail Analytics
+![Python 3.6](https://img.shields.io/badge/Python-3.6-brightgreen.svg) ![Streamlit](https://img.shields.io/badge/Streamlit-Library-orange.svg)<br>
 This **fully-fledged, interactive retail analytics showcase** dives into:
 - The most important questions that big data and statistical learning can answer in the retail space
 - The algorithms driving modern retail analytics
