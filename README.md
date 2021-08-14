@@ -1,11 +1,11 @@
-# Retail-Analytics-Website
+# Deep Dive into Retail Analytics
 This **fully-fledged, interactive retail analytics showcase** dives into:
 - The most important questions that big data and statistical learning can answer in the retail space
 - The algorithms driving modern retail analytics
 - How effective these algorithms can be in answering those questions
 
 ---
-# References
+## References
 This website wouldn't have been possible without the helpful resources below:
 - [Book Recommendations Dataset on Kaggle](https://www.kaggle.com/saurabhbagchi/books-dataset)
 - [Churn Analysis Dataset on Kaggle](https://www.kaggle.com/sandipdatta/customer-churn-analysis)
