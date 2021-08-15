@@ -172,9 +172,9 @@ with main2:
             search = merged_df_tr.loc[merged_df_tr["Book"]
                                       == search, "ISBN"].values[0]
             # with the ISBN found, we can now continue with the original method
-            col_idx = rating_crosstab.beta_columns.get_loc(search)
+            col_idx = rating_crosstab.columns.get_loc(search)
             corr_specific = coss_mat[col_idx]
-            top_items = pd.DataFrame({'corr_specific': corr_specific, 'ID': rating_crosstab.beta_columns})\
+            top_items = pd.DataFrame({'corr_specific': corr_specific, 'ID': rating_crosstab.columns})\
                 .sort_values('corr_specific', ascending=False)\
                 .head(10)
             top_items = top_items.merge(merged_df_tr[[
