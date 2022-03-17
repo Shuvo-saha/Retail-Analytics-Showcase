@@ -101,6 +101,8 @@ with main2:
     st.image(Image.open("Streamlit Data/Images/color_logo.png"), width=150)
     st.title("Impactful Retail Analytics")
     st.markdown("""
+                Hi, I'm Shuvo Saha, a data enthusiast from Bangladesh! The code for this web app can be found [here] (https://github.com/Shuvo-saha/Retail-Analytics-Showcase)\n
+                
                 The retail world generates **massive amounts of data** from consumers and the interactions they have. 
                 All that data can lead to **better customer targeting, higher 
                 customer satisfaction and in turn, less customer churn**. With large datasets, however, we also need to ask the right questions.\n 
