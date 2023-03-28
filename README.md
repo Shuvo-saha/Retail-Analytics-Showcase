@@ -43,4 +43,4 @@ This website was built using Python and the following libraries:
 - [Seaborn](https://seaborn.pydata.org/)
 - [Pandas](https://pandas.pydata.org/) 
 
-Previous eployment via [Heroku](https://www.heroku.com/) but now hosted on [Streamlit Share] (https://share.streamlit.io/)
+Previous eployment via [Heroku](https://www.heroku.com/) but now hosted on [Streamlit Share](https://share.streamlit.io/)
