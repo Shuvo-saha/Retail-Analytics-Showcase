@@ -36,8 +36,7 @@ def association_analyzer():
 
 @st.cache(allow_output_mutation=True)
 def churn_analyzer():
-    # returns X,y,gbc scaler,churn_df_sample in that order
-    gbc = joblib.load('Streamlit Data/Churn/gbc.joblib')
+    # returns X,y,scaler,churn_df_sample in that order
     dt = joblib.load('Streamlit Data/Churn/dt.joblib')
     lr = joblib.load('Streamlit Data/Churn/lr.joblib')
     rf = joblib.load('Streamlit Data/Churn//rf.joblib')
@@ -51,7 +50,7 @@ def churn_analyzer():
         "Streamlit Data/Churn/churn_df_sample.bz2")
     X_train, X_test, y_train, y_test = train_test_split(
         X, y, test_size=0.2, random_state=42)
-    return X_test, y_test, gbc, dt, lr, rf, stack, scaler, churn_df_sample
+    return X_test, y_test, dt, lr, rf, stack, scaler, churn_df_sample
 
 
 @st.cache(allow_output_mutation=True)
