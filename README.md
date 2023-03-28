@@ -1,22 +1,22 @@
 # Deep Dive into Retail Analytics
-![Python 3.6](https://img.shields.io/badge/Python-3.6-brightgreen.svg) ![Streamlit](https://img.shields.io/badge/Streamlit-Library-orange.svg)<br>
+![Python 3.9](https://img.shields.io/badge/Python-3.9-brightgreen.svg) ![Streamlit](https://img.shields.io/badge/Streamlit-Library-orange.svg)<br>
 This **fully-fledged, interactive retail analytics showcase** dives into:
 - The most important questions that big data and statistical learning can answer in the retail space
 - The algorithms driving modern retail analytics
 - How effective these algorithms can be in answering those questions 
 
-You can view the web app [here](https://retail-analytics-showcase.herokuapp.com/)
+You can view the web app [here](https://shuvo-saha-retail-analytics-showcase-streamlit-app-kzkeml.streamlit.app/)
 
 ---
 ## Data Size & Algorithms
 - Recommendation System: Book ratings for approximately *5812 books* by *15,797 users*, cosine similarity based *Item-Item Collaborative Filtering*
 - Market Basket Analysis: *7500* transactions at a grocery store, *Association Rules Analysis* using *Apriori*
 - Churn Prediction: *3333 customers* and *17 features* per customer for a telecom operator, multiple classification models including:
-  -  *Gradient Boosting Classifier* (81.56% F1-Score)
+  -  *Gradient Boosting Classifier* (81.56% F1-Score) (Removed temporarily)
   -  *Decision Tree* (71.57% F1-Score)
   -  *Logistic Regression* (25.95% F1-Score)
   -  *Random Forest Classifier* (80.9% F1-Score)
-  -  *Stacking Classifier* with Logistic Regression, Decision Tree and Random Forest (85.25% F1-Score)
+  -  *Stacking Classifier* with Logistic Regression, Decision Tree and Random Forest (85.25% F1-Score) (Removed temporarily)
 - Clustering: *8590* consumers and *17 different credit information* on each user of a financial institution, *K-Means Clustering* and *Principal Component Analysis*
 - Customer Segmentation: Transactions covering *4380 Customers* and *4207 Products* for an e-commerce platform, *Recency, Frequency and Monetary Analysis*
 
@@ -43,4 +43,4 @@ This website was built using Python and the following libraries:
 - [Seaborn](https://seaborn.pydata.org/)
 - [Pandas](https://pandas.pydata.org/) 
 
-Deployment via [Heroku](https://www.heroku.com/)
+Previous eployment via [Heroku](https://www.heroku.com/) but now hosted on [Streamlit Share] (https://share.streamlit.io/)
