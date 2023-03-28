@@ -144,7 +144,7 @@ with main2:
         st.markdown('''Using *Item-Item Collaborative Filtering*, we can understand the similarities between books. 
                     Item-item collaborative filtering is based on the similarity between items calculated using people's ratings of
                     those items. Item-item collaborative filtering was invented and used by *Amazon* in 1998. To learn more, go to And here it is in action:''')
-        with st.beta_expander("Learn more about Item-Item Collaborative Filtering"):
+        with st.expander("Learn more about Item-Item Collaborative Filtering"):
             st.markdown('''
                         Suppose that a customer, Mark, wants to purchase a book. We first look at all the books Mark has read - Harry Potter and Oliver Twist. Mark has rated both these books
                         highly. Three other users, Mathew and his brothers, also love these books and they also love Eragon. Therefore, these users rated Harry Potter, Oliver Twist and Eragon very similarly.
@@ -155,7 +155,7 @@ with main2:
                     I've gone ahead and trained an Item-Item Collaborative Filtering model using the full dataset. The model will take the book name and then using the magic of [similarity measures](https://en.wikipedia.org/wiki/Similarity_measure#:~:text=In%20statistics%20and%20related%20fields,the%20similarity%20between%20two%20objects.),
                     (I've used *Cosine Similarity* for my analysis) it recommends the closest 3 books that you might like.  You can even search up the book names and check if I've got it right 😉
                     ''')
-        with st.beta_expander("Learn more about Cosine Similarity"):
+        with st.expander("Learn more about Cosine Similarity"):
             st.markdown('''
                         A simple similarity measure is Euclidean distance or , the length of the shortest possible path between two points.\n
                         Cosine similarity is similar but it does not take size into account. Mathematically, it measures the cosine of the angle 
@@ -253,7 +253,7 @@ with main2:
 
         submit_mba = st.button("Submit")
         if submit_mba:
-            chosen_expander = st.beta_expander(
+            chosen_expander = st.expander(
                 label='See generated association rules table and learn more about association rules')
             with chosen_expander:
                 st.write(chosen.assign(hack='').set_index('hack'))
@@ -291,7 +291,7 @@ with main2:
                 The company has a dataset of its *3333 customers* and *17 features* per customer. The company also knows which 
                 customers have shifted to competitor services.The dataset sample is shown below:\n
                 ''')
-        with st.beta_expander("See feature descriptions"):
+        with st.expander("See feature descriptions"):
             st.markdown('''
                         - *Account length*, which is  how many days the customer has used the operator's services.
                 - *International plan*, where 0 indicates the customer is not on the plan and 1 indicates the opposite.
@@ -314,7 +314,7 @@ with main2:
             classes rather than output a numeric value. In our case, we have two classes - churned
             and not churned.\n
             There are many classification techniques from simple linear methods like *logistic
-            regression* to more complex methods like *neural networks*. I've picked 5 common models for
+            regression* to more complex methods like *neural networks*. I've picked 4 common models for
             this problem set. Pick any model below and we'll show you how it works, and how it performs.
             
             ''')
@@ -416,7 +416,7 @@ with main2:
             text_fi = eli5.formatters.as_dataframe.format_as_dataframe(text_fi)
             pfi_table = text_fi[['feature', 'weight']].sort_values(
                 "weight", ascending=False).rename(columns={'feature': "Features", "weight": "Weights"}).style.background_gradient(axis=0)
-            with st.beta_expander("See explanation of feature importance"):
+            with st.expander("See explanation of feature importance"):
                 st.markdown('''
                             Most machine learning models are *black-box* models. This means that they're created
                             directly from data and even the people who designed them, cannot understand how
@@ -435,7 +435,7 @@ with main2:
         y_pred = model.predict(X_test)
 
         # Plot conf matrix and f1 score in an expander
-        with st.beta_expander(
+        with st.expander(
                 label='See classification accuracy and other metrics for the selected model'):
             # col_i, col_ii = st.beta_columns([2, 5])
             conf_fig = plt.figure(figsize=(5, 4))
@@ -510,7 +510,7 @@ with main2:
                     *17 different credit information* on each user. Can the institution segment its 
                     customers based on the data provided?
                     ''')
-        with st.beta_expander("See feature descriptions"):
+        with st.expander("See feature descriptions"):
             st.markdown('''
                     
                     - BALANCE : Balance amount left in their account to make purchases
@@ -659,7 +659,7 @@ with main2:
                     with some discounts and offers!
                     
                     ''')
-        with st.beta_expander("Learn more about RFM analysis"):
+        with st.expander("Learn more about RFM analysis"):
             st.markdown('''
                         To learn more about RFM analysis and the underlying methodologies, go to this [article](https://clevertap.com/blog/rfm-analysis/).
                         [This analysis](https://www.kaggle.com/blewitts/ecommerce-rfm-analysis) on Kaggle also goes over the other customer
