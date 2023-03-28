@@ -40,7 +40,6 @@ def churn_analyzer():
     dt = joblib.load('Streamlit Data/Churn/dt.joblib')
     lr = joblib.load('Streamlit Data/Churn/lr.joblib')
     rf = joblib.load('Streamlit Data/Churn//rf.joblib')
-    stack = joblib.load('Streamlit Data/Churn//stack.joblib')
     X = np.load('Streamlit Data/Churn/X.npy')
     y = np.load('Streamlit Data/Churn/y.npy')
 
@@ -50,7 +49,7 @@ def churn_analyzer():
         "Streamlit Data/Churn/churn_df_sample.bz2")
     X_train, X_test, y_train, y_test = train_test_split(
         X, y, test_size=0.2, random_state=42)
-    return X_test, y_test, dt, lr, rf, stack, scaler, churn_df_sample
+    return X_test, y_test, dt, lr, rf, scaler, churn_df_sample
 
 
 @st.cache(allow_output_mutation=True)
@@ -283,7 +282,7 @@ with main2:
     # CHURN ANALYSIS
     if question == 'What customers are we likely to lose soon?':
         # load in the data
-        X_test, y_test, dt, lr, rf, stack, scaler, churn_df_sample = churn_analyzer()
+        X_test, y_test, dt, lr, rf, scaler, churn_df_sample = churn_analyzer()
 
         st.markdown('# What customers are we likely to lose soon?')
         st.markdown('''
@@ -314,7 +313,7 @@ with main2:
             classes rather than output a numeric value. In our case, we have two classes - churned
             and not churned.\n
             There are many classification techniques from simple linear methods like *logistic
-            regression* to more complex methods like *neural networks*. I've picked 4 common models for
+            regression* to more complex methods like *neural networks*. I've picked 3 common models for
             this problem set. Pick any model below and we'll show you how it works, and how it performs.
             
             ''')
@@ -323,7 +322,7 @@ with main2:
         # This is PFI, tkae  the text, format as df then sort,rename col and add color style
         # selection for different models
         model = st.selectbox(label="Pick classification algorithm", 
-                             options=[dt, lr, rf, stack], format_func=model_formatter)
+                             options=[dt, lr, rf], format_func=model_formatter)
 #         if model == gbc:
 
 #             st.markdown('''
@@ -383,28 +382,25 @@ with main2:
                     the day, and have a high day charge* are likely to churn. The other features are listed in order of importance below.
                     Note that the values are not important for our analysis but the rankings are.
             ''')
-        elif model == stack:
-            st.markdown('''
-            *Stacking, Bagging and Boosting* are all *ensemble* algorithms. 
-            - *Bagging* uses
-            homogeneous weak learners, trains them independently in parallel and then
-            combines them using a deterministic method like averaging.
-            - *Boosting* also uses homogeneous weak learners, but instead of combining
-            them, it trains them sequentially and then uses a deterministic method like averaging.
-            - *Stacking* uses heterogeneous or different types of weak learners, trains
-            them in parallel and combines them by using another model (like
-            logistic regression) to output a prediction.
-            Note that the feature importances for stacking models are not shown below as 
-            it is difficult to calculate and may not be accurate. However, the accuracy usually
-            improves when combining multiple models (and has improved in our case as well).\n
-            We've stacked our Random Forest, Decision Tree and the Logistic Regression models for this classifier.
-            ''')
+#         elif model == stack:
+#             st.markdown('''
+#             *Stacking, Bagging and Boosting* are all *ensemble* algorithms. 
+#             - *Bagging* uses
+#             homogeneous weak learners, trains them independently in parallel and then
+#             combines them using a deterministic method like averaging.
+#             - *Boosting* also uses homogeneous weak learners, but instead of combining
+#             them, it trains them sequentially and then uses a deterministic method like averaging.
+#             - *Stacking* uses heterogeneous or different types of weak learners, trains
+#             them in parallel and combines them by using another model (like
+#             logistic regression) to output a prediction.
+#             Note that the feature importances for stacking models are not shown below as 
+#             it is difficult to calculate and may not be accurate. However, the accuracy usually
+#             improves when combining multiple models (and has improved in our case as well).\n
+#             We've stacked our Random Forest, Decision Tree and the Logistic Regression models for this classifier.
+#             ''')
 
         # if stacking classifier this doesn't work so make sure to use if function here
-        if model == stack:
-            pfi_table = ''
-        else:
-            text_fi = explain_weights(model, targets=[False, True], feature_names=['account length', 'international plan', 'voice mail plan',
+        text_fi = explain_weights(model, targets=[False, True], feature_names=['account length', 'international plan', 'voice mail plan',
                                                                                    'number vmail messages', 'total day minutes', 'total day calls',
                                                                                    'total day charge', 'total eve minutes', 'total eve calls',
                                                                                    'total eve charge', 'total night minutes', 'total night calls',
@@ -415,24 +411,24 @@ with main2:
                                                                                                                                             'total eve charge', 'total night minutes', 'total night calls',
                                                                                                                                             'total night charge', 'total intl minutes', 'total intl calls',
                                                                                                                                             'total intl charge', 'customer service calls'])+1)
-            text_fi = eli5.formatters.as_dataframe.format_as_dataframe(text_fi)
-            pfi_table = text_fi[['feature', 'weight']].sort_values(
-                "weight", ascending=False).rename(columns={'feature': "Features", "weight": "Weights"}).style.background_gradient(axis=0)
-            with st.expander("See explanation of feature importance"):
-                st.markdown('''
-                            Most machine learning models are *black-box* models. This means that they're created
-                            directly from data and even the people who designed them, cannot understand how
-                            the variables are being combined to make predictions. Methods to explain these models
-                            are usually in two forms: local and global explainers.\n 
-                            Local explainers allow us to
-                            explain a specific prediction e.g. *LIME (Local Interpretable Model-agnostic Explanations)*
-                            creates a white-box or explainable model that works well in the area close to the concerned
-                            prediction example.\n
-                            Global explainers are used to explain the whole model and how every feature impacts it on a
-                            general level e.g. *Permutation Feature Importance (PFI)* looks at how much the score (R-Squared, F-1 score, etc)
-                            decreases when a feature is not available. The values below are generated using [PFI and the ELI5 libary](https://eli5.readthedocs.io/en/latest/blackbox/permutation_importance.html).
-                            ''')
-            st.table(pfi_table)
+        text_fi = eli5.formatters.as_dataframe.format_as_dataframe(text_fi)
+        pfi_table = text_fi[['feature', 'weight']].sort_values(
+            "weight", ascending=False).rename(columns={'feature': "Features", "weight": "Weights"}).style.background_gradient(axis=0)
+        with st.expander("See explanation of feature importance"):
+            st.markdown('''
+                        Most machine learning models are *black-box* models. This means that they're created
+                        directly from data and even the people who designed them, cannot understand how
+                        the variables are being combined to make predictions. Methods to explain these models
+                        are usually in two forms: local and global explainers.\n 
+                        Local explainers allow us to
+                        explain a specific prediction e.g. *LIME (Local Interpretable Model-agnostic Explanations)*
+                        creates a white-box or explainable model that works well in the area close to the concerned
+                        prediction example.\n
+                        Global explainers are used to explain the whole model and how every feature impacts it on a
+                        general level e.g. *Permutation Feature Importance (PFI)* looks at how much the score (R-Squared, F-1 score, etc)
+                        decreases when a feature is not available. The values below are generated using [PFI and the ELI5 libary](https://eli5.readthedocs.io/en/latest/blackbox/permutation_importance.html).
+                        ''')
+        st.table(pfi_table)
         # print a confusion matrix using test data
         y_pred = model.predict(X_test)
 
