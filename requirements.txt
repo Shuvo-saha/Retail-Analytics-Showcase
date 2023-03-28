@@ -1,11 +1,10 @@
 pip
 matplotlib
 eli5
-pandas==1.2.4
-numpy<=1.23.5
+pandas
+numpy
 seaborn
 joblib
-streamlit==0.83
-scikit_learn<=1.1.1
+streamlit
+scikit_learn
 pillow
-protobuf~=3.19.0
