@@ -401,7 +401,9 @@ with main2:
             ''')
 
         # if stacking classifier this doesn't work so make sure to use if function here
-        if model != stack:
+        if model == stack:
+            pass
+        else:
             text_fi = explain_weights(model, targets=[False, True], feature_names=['account length', 'international plan', 'voice mail plan',
                                                                                    'number vmail messages', 'total day minutes', 'total day calls',
                                                                                    'total day charge', 'total eve minutes', 'total eve calls',
