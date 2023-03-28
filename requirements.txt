@@ -8,3 +8,4 @@ joblib
 streamlit==0.83
 scikit_learn
 pillow
+protobuf~=3.19.0
