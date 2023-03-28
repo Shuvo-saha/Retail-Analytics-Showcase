@@ -2,7 +2,7 @@ pip
 matplotlib
 eli5
 pandas==1.2.4
-numpy
+numpy<=1.23.5
 seaborn
 joblib
 streamlit==0.83
