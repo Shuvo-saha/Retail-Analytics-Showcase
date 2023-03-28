@@ -324,29 +324,29 @@ with main2:
         # selection for different models
         model = st.selectbox(label="Pick classification algorithm", 
                              options=[dt, lr, rf, stack], format_func=model_formatter)
-        if model == gbc:
+#         if model == gbc:
 
-            st.markdown('''
-                    A *Gradient Boosting Classifier* is a model that uses a series of weak learners to make predictions.
-                    It is an *ensemble* technique since it uses multiple models.\n
-                    The algorithm/model minimizes a loss function e.g.
-                    regression uses the squared error for its loss function. The weak learners are usually shallow
-                    decision trees (select Decision
-                    Tree Classifier for a thorough explanation). Then the trees are added one at a time and
-                    loss is reduced gradually using a *gradient descent procedure*. More trees are added to
-                    reduce loss until the final output is improved or the model has reached a maximum number of trees.
-                    For more on Gradient Boosting, go over [this article](https://towardsdatascience.com/understanding-gradient-boosting-machines-9be756fe76ab). 
-                    ''')
+#             st.markdown('''
+#                     A *Gradient Boosting Classifier* is a model that uses a series of weak learners to make predictions.
+#                     It is an *ensemble* technique since it uses multiple models.\n
+#                     The algorithm/model minimizes a loss function e.g.
+#                     regression uses the squared error for its loss function. The weak learners are usually shallow
+#                     decision trees (select Decision
+#                     Tree Classifier for a thorough explanation). Then the trees are added one at a time and
+#                     loss is reduced gradually using a *gradient descent procedure*. More trees are added to
+#                     reduce loss until the final output is improved or the model has reached a maximum number of trees.
+#                     For more on Gradient Boosting, go over [this article](https://towardsdatascience.com/understanding-gradient-boosting-machines-9be756fe76ab). 
+#                     ''')
 
-            st.image(Image.open("Streamlit Data/Images/boosting.png"),
-                     caption="Source: Corporate Finance Institute", width=500)
-            st.markdown('''
-                    ---
-                    The model predicts that customers with *high number of customer service calls, who mostly talk during 
-                    the day, and have a high day charge* are likely to churn. The other features are listed in order of importance below.
-                    Note that the values are not important for our analysis but the rankings are.
-                    ''')
-        elif model == dt:
+#             st.image(Image.open("Streamlit Data/Images/boosting.png"),
+#                      caption="Source: Corporate Finance Institute", width=500)
+#             st.markdown('''
+#                     ---
+#                     The model predicts that customers with *high number of customer service calls, who mostly talk during 
+#                     the day, and have a high day charge* are likely to churn. The other features are listed in order of importance below.
+#                     Note that the values are not important for our analysis but the rankings are.
+#                     ''')
+        if model == dt:
             st.markdown('''
             A *Decision Tree Classifier* breaks down a dataset into smaller and smaller subsets based on certain cutoffs. Thus, the
             number of examples get smaller every division. Once the tree reaches a certain *depth* (or number of splits) or it
@@ -490,10 +490,10 @@ with main2:
         if submit_churn:
             test_arr = np.array([[acc_length, int_plan, vml_plan, num_vm, total_day, 137, 21.95, 228.5, 83, 19.42, 20, 11, 9.4,
                                   12.7, 6, 3.43, customer_service]])
-            if gbc.predict(scaler.transform(test_arr))[0] == False:
+            if model.predict(scaler.transform(test_arr))[0] == False:
                 st.markdown(
                     "The model predicts the customer is **unlikely** to switch to the competitor (given the dataset)")
-            elif gbc.predict(scaler.transform(test_arr))[0] == True:
+            elif model.predict(scaler.transform(test_arr))[0] == True:
                 st.markdown(
                     "The model predicts the customer is **likely** to switch to the competitor (given the dataset)")
 
