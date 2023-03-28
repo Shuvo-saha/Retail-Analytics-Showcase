@@ -283,7 +283,7 @@ with main2:
     # CHURN ANALYSIS
     if question == 'What customers are we likely to lose soon?':
         # load in the data
-        X_test, y_test, gbc, dt, lr, rf, stack, scaler, churn_df_sample = churn_analyzer()
+        X_test, y_test, dt, lr, rf, stack, scaler, churn_df_sample = churn_analyzer()
 
         st.markdown('# What customers are we likely to lose soon?')
         st.markdown('''
