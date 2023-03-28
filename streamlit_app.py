@@ -2,7 +2,7 @@ import re
 from io import BytesIO
 import seaborn as sns
 import matplotlib.pyplot as plt
-from eli5 import show_prediction, show_weights, explain_weights
+from eli5 import show_weights, explain_weights
 import streamlit as st
 import pandas as pd
 import numpy as np
