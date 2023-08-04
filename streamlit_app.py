@@ -15,7 +15,7 @@ import eli5
 from PIL import Image
 
 
-@st.cache(allow_output_mutation=True)
+@st.cache_data
 def recommendation_engine():
     # Returns rating crosstab, merged_df_tr and coss_mat in that order
     merged_df_tr = pd.read_pickle(
@@ -27,19 +27,20 @@ def recommendation_engine():
     return rating_crosstab, merged_df_tr, coss_mat
 
 
-@st.cache(allow_output_mutation=True)
+@st.cache_resource
 def association_analyzer():
     # Returns rating crosstab, merged_df_tr and coss_mat in that order
     rules = pd.read_pickle("Streamlit Data/Market Basket Analysis/rules.bz2")
     return rules
 
 
-@st.cache(allow_output_mutation=True)
+@st.cache_resource
 def churn_analyzer():
-    # returns X,y,scaler,churn_df_sample in that order
+    gbc = joblib.load('Streamlit Data/Churn/gbc.joblib')
     dt = joblib.load('Streamlit Data/Churn/dt.joblib')
     lr = joblib.load('Streamlit Data/Churn/lr.joblib')
     rf = joblib.load('Streamlit Data/Churn//rf.joblib')
+    stack = joblib.load('Streamlit Data/Churn//stack.joblib')
     X = np.load('Streamlit Data/Churn/X.npy')
     y = np.load('Streamlit Data/Churn/y.npy')
 
@@ -49,10 +50,10 @@ def churn_analyzer():
         "Streamlit Data/Churn/churn_df_sample.bz2")
     X_train, X_test, y_train, y_test = train_test_split(
         X, y, test_size=0.2, random_state=42)
-    return X_test, y_test, dt, lr, rf, scaler, churn_df_sample
+    return X_test, y_test, gbc, dt, lr, rf, stack, scaler, churn_df_sample
 
 
-@st.cache(allow_output_mutation=True)
+@st.cache_resource
 def clustering():
     # returns cluster_data, X_new in that order
     cluster_data_2 = pd.read_pickle(
@@ -70,13 +71,13 @@ def clustering():
 # this is needed for the recommendation system
 
 
-@st.cache(allow_output_mutation=True)
+@st.cache_resource
 def rfm_loader():
     rfm = pd.read_pickle("Streamlit Data/Customer Segmentation/RFM/rfm.bz2")
     return rfm
 
 
-@st.cache
+@st.cache_resource
 def rand_gen(x, y):
     return np.random.randint(x, y)
 
@@ -94,7 +95,7 @@ st.set_page_config(
     initial_sidebar_state="expanded"
 )
 
-main1, main2, main3 = st.beta_columns([1, 2, 1])
+main1, main2, main3 = st.columns([1, 2, 1])
 with main2:
     st.image(Image.open("Streamlit Data/Images/color_logo.png"), width=150)
     st.title("Impactful Retail Analytics")
@@ -111,11 +112,11 @@ with main2:
                 """)
     # RECOMMENDATIONS
 
-    question = st.selectbox(label="", options=['Pick a question',
+    question = st.selectbox(label="Pick a question", options=['Introduction',
                                                'What products do we recommend to our users?', 'What products increase the chance of buying other products?',
                                                'What customers are we likely to lose soon?', 'How can we segment our customers?', 'Who are our most important customers?', 'References and Further Reading'])
 
-    if question == "Pick a question":
+    if question == "Introduction":
         st.markdown(
             "## **What do industry leaders say?**")
         st.write('''The video below goes through Boston Consultancy Group's thoughts on how analytics will change the retail
@@ -137,7 +138,7 @@ with main2:
 
         rating_crosstab, merged_df_tr, coss_mat = recommendation_engine()
         st.write(merged_df_tr[["Book", "User-ID", "Book-Rating"]]
-                 [20:30].assign(hack='').set_index('hack'))
+                 [20:30])
 
         st.markdown("## **Recommendation Systems are the answer!**")
         st.markdown('''Using *Item-Item Collaborative Filtering*, we can understand the similarities between books. 
@@ -165,8 +166,7 @@ with main2:
             st.image(Image.open(
                 "Streamlit Data/Images/cosine-similarity.png"), width=500)
         st.markdown("## **Select a book to generate top 3 recommendations.**")
-        search = st.selectbox(label="",
-                              options=list(merged_df_tr["Book"][random_no:random_no+100]), help="100 books are randomly selected for the selection pool")
+        search = st.selectbox(label="Search for books", options=list(merged_df_tr["Book"][random_no:random_no+500]), help="500 books are randomly selected for the selection pool")
         submit_rec = st.button("Submit")
         if submit_rec:
             search = merged_df_tr.loc[merged_df_tr["Book"]
@@ -205,7 +205,7 @@ with main2:
 
         st.write(pd.DataFrame({"Item 1": ['burgers', 'meatballs', 'eggs'],
                                "Item 2": ['chutney', 'salsa', 'ketchup'],
-                               "Item 3": ['turkey', 'avocado', 'peaches']}).assign(hack='').set_index('hack'))
+                               "Item 3": ['turkey', 'avocado', 'peaches']}))
         st.markdown(
             "## **Market Basket Analysis can uncover hidden product associations.**")
         st.markdown('''
@@ -224,7 +224,6 @@ with main2:
                     e.g. a lift score of 3 for diapers -> milk means that if the customer had a 30% likelihood of buying milk on any
                     day, that likelihood is now 90% (30*3).\n  
                     ''')
-        # _, col_im, _ = st.beta_columns([1, 1, 1])
         st.image("Streamlit Data/Images/equations-mba.png",
                  caption="Support, Confidence and Lift Formulas", width=500)
 
@@ -236,8 +235,6 @@ with main2:
                     Therefore, to understand product relationships, we can look at the **Lift** score, while talking into account,
                     the confidence (to measure reliability) and popularity.
                     ''')
-
-        # col1, col2, col3 = st.beta_columns(3)
         st.markdown(
             "## **Use the cutoff values below to generate product associations.**")
         lift = st.slider(
@@ -255,7 +252,7 @@ with main2:
             chosen_expander = st.expander(
                 label='See generated association rules table and learn more about association rules')
             with chosen_expander:
-                st.write(chosen.assign(hack='').set_index('hack'))
+                st.write(chosen)
                 st.markdown('''
                             You'll notice that the table above also has a conviction value. To learn more about association rules, Apriori (and conviction) go this [link](https://en.wikipedia.org/wiki/Association_rule_learning)
                             and this [link](https://searchbusinessanalytics.techtarget.com/definition/association-rules-in-data-mining).
@@ -282,7 +279,7 @@ with main2:
     # CHURN ANALYSIS
     if question == 'What customers are we likely to lose soon?':
         # load in the data
-        X_test, y_test, dt, lr, rf, scaler, churn_df_sample = churn_analyzer()
+        X_test, y_test, gbc, dt, lr, rf, stack, scaler, churn_df_sample = churn_analyzer()
 
         st.markdown('# What customers are we likely to lose soon?')
         st.markdown('''
@@ -303,7 +300,7 @@ with main2:
                 Note that international calls have separate call, charge and minutes data.
                         ''')
 
-        st.write(churn_df_sample.assign(hack='').set_index('hack'))
+        st.write(churn_df_sample)
         st.write(
             "Can it use its past customer data to predict churn of new customers?")
 
@@ -321,31 +318,34 @@ with main2:
 
         # This is PFI, tkae  the text, format as df then sort,rename col and add color style
         # selection for different models
-        model = st.selectbox(label="Pick classification algorithm", 
-                             options=[dt, lr, rf], format_func=model_formatter)
-#         if model == gbc:
+        option = st.selectbox(label="Pick classification algorithm", 
+                             options=["Decision Tree", "Logistic Regression",
+                                      "Random Forest", "Gradient Boosting Classifier", 
+                                      "Stacking Classifier"])
+        if option == 'Gradient Boosting Classifier':
+            model = gbc
+            st.markdown('''
+                    A *Gradient Boosting Classifier* is a model that uses a series of weak learners to make predictions.
+                    It is an *ensemble* technique since it uses multiple models.\n
+                    The algorithm/model minimizes a loss function e.g.
+                    regression uses the squared error for its loss function. The weak learners are usually shallow
+                    decision trees (select Decision
+                    Tree Classifier for a thorough explanation). Then the trees are added one at a time and
+                    loss is reduced gradually using a *gradient descent procedure*. More trees are added to
+                    reduce loss until the final output is improved or the model has reached a maximum number of trees.
+                    For more on Gradient Boosting, go over [this article](https://towardsdatascience.com/understanding-gradient-boosting-machines-9be756fe76ab). 
+                    ''')
 
-#             st.markdown('''
-#                     A *Gradient Boosting Classifier* is a model that uses a series of weak learners to make predictions.
-#                     It is an *ensemble* technique since it uses multiple models.\n
-#                     The algorithm/model minimizes a loss function e.g.
-#                     regression uses the squared error for its loss function. The weak learners are usually shallow
-#                     decision trees (select Decision
-#                     Tree Classifier for a thorough explanation). Then the trees are added one at a time and
-#                     loss is reduced gradually using a *gradient descent procedure*. More trees are added to
-#                     reduce loss until the final output is improved or the model has reached a maximum number of trees.
-#                     For more on Gradient Boosting, go over [this article](https://towardsdatascience.com/understanding-gradient-boosting-machines-9be756fe76ab). 
-#                     ''')
-
-#             st.image(Image.open("Streamlit Data/Images/boosting.png"),
-#                      caption="Source: Corporate Finance Institute", width=500)
-#             st.markdown('''
-#                     ---
-#                     The model predicts that customers with *high number of customer service calls, who mostly talk during 
-#                     the day, and have a high day charge* are likely to churn. The other features are listed in order of importance below.
-#                     Note that the values are not important for our analysis but the rankings are.
-#                     ''')
-        if model == dt:
+            st.image(Image.open("Streamlit Data/Images/boosting.png"),
+                     caption="Source: Corporate Finance Institute", width=500)
+            st.markdown('''
+                    ---
+                    The model predicts that customers with *high number of customer service calls, who mostly talk during 
+                    the day, and have a high day charge* are likely to churn. The other features are listed in order of importance below.
+                    Note that the values are not important for our analysis but the rankings are.
+                    ''')
+        if option == 'Decision Tree':
+            model = dt
             st.markdown('''
             A *Decision Tree Classifier* breaks down a dataset into smaller and smaller subsets based on certain cutoffs. Thus, the
             number of examples get smaller every division. Once the tree reaches a certain *depth* (or number of splits) or it
@@ -359,7 +359,8 @@ with main2:
                     the day, and have a high day charge* are likely to churn. The other features are listed in order of importance below.
                     Note that the values are not important for our analysis but the rankings are.
                     ''')
-        elif model == lr:
+        elif option == "Logistic Regression":
+            model = lr
             st.markdown('''
             *Logistic Regression* is similar to linear regression but instead
             it uses a function that squeezes the output to a scale of 0 to 1. 
@@ -373,7 +374,8 @@ with main2:
                     and a high day charge* are likely to churn. The other features are listed in order of importance below.
                     Note that the values are not important for our analysis but the rankings are.
                     ''')
-        elif model == rf:
+        elif option == "Random Forest":
+            model = rf
             st.markdown('''
             *Random Forest Classifiers* train multiple decision trees (Pick Decision Tree Classifier for a thorough explanation)
             on subsets of the observations and features and then combine them for a more accurate predictions. Even though
@@ -382,60 +384,63 @@ with main2:
                     the day, and have a high day charge* are likely to churn. The other features are listed in order of importance below.
                     Note that the values are not important for our analysis but the rankings are.
             ''')
-#         elif model == stack:
-#             st.markdown('''
-#             *Stacking, Bagging and Boosting* are all *ensemble* algorithms. 
-#             - *Bagging* uses
-#             homogeneous weak learners, trains them independently in parallel and then
-#             combines them using a deterministic method like averaging.
-#             - *Boosting* also uses homogeneous weak learners, but instead of combining
-#             them, it trains them sequentially and then uses a deterministic method like averaging.
-#             - *Stacking* uses heterogeneous or different types of weak learners, trains
-#             them in parallel and combines them by using another model (like
-#             logistic regression) to output a prediction.
-#             Note that the feature importances for stacking models are not shown below as 
-#             it is difficult to calculate and may not be accurate. However, the accuracy usually
-#             improves when combining multiple models (and has improved in our case as well).\n
-#             We've stacked our Random Forest, Decision Tree and the Logistic Regression models for this classifier.
-#             ''')
-
-        # if stacking classifier this doesn't work so make sure to use if function here
-        text_fi = explain_weights(model, targets=[False, True], feature_names=['account length', 'international plan', 'voice mail plan',
-                                                                                   'number vmail messages', 'total day minutes', 'total day calls',
-                                                                                   'total day charge', 'total eve minutes', 'total eve calls',
-                                                                                   'total eve charge', 'total night minutes', 'total night calls',
-                                                                                   'total night charge', 'total intl minutes', 'total intl calls',
-                                                                                   'total intl charge', 'customer service calls'], top=len(['account length', 'international plan', 'voice mail plan',
+        elif option == "Stacking Classifier":
+            model = stack
+            st.markdown('''
+            *Stacking, Bagging and Boosting* are all *ensemble* algorithms. 
+            - *Bagging* uses
+            homogeneous weak learners, trains them independently in parallel and then
+            combines them using a deterministic method like averaging.
+            - *Boosting* also uses homogeneous weak learners, but instead of combining
+            them, it trains them sequentially and then uses a deterministic method like averaging.
+            - *Stacking* uses heterogeneous or different types of weak learners, trains
+            them in parallel and combines them by using another model (like
+            logistic regression) to output a prediction.
+            Note that the feature importances for stacking models are not shown below as 
+            it is difficult to calculate and may not be accurate. However, the accuracy usually
+            improves when combining multiple models (and has improved in our case as well).\n
+            We've stacked our Random Forest, Decision Tree and the Logistic Regression models for this classifier.
+            ''')
+            
+        # we have to use this hack because the model variable doesn't work with the if function
+        # to check if the model is a stacking classifier
+        if option != "Stacking Classifier":
+            # if stacking classifier this doesn't work so make sure to use if function here
+            text_fi = explain_weights(model, targets=[False, True], feature_names=['account length', 'international plan', 'voice mail plan',
+                                                                                    'number vmail messages', 'total day minutes', 'total day calls',
+                                                                                    'total day charge', 'total eve minutes', 'total eve calls',
+                                                                                    'total eve charge', 'total night minutes', 'total night calls',
+                                                                                    'total night charge', 'total intl minutes', 'total intl calls',
+                                                                                    'total intl charge', 'customer service calls'], top=len(['account length', 'international plan', 'voice mail plan',
                                                                                                                                             'number vmail messages', 'total day minutes', 'total day calls',
                                                                                                                                             'total day charge', 'total eve minutes', 'total eve calls',
                                                                                                                                             'total eve charge', 'total night minutes', 'total night calls',
                                                                                                                                             'total night charge', 'total intl minutes', 'total intl calls',
                                                                                                                                             'total intl charge', 'customer service calls'])+1)
-        text_fi = eli5.formatters.as_dataframe.format_as_dataframe(text_fi)
-        pfi_table = text_fi[['feature', 'weight']].sort_values(
+            text_fi = eli5.formatters.as_dataframe.format_as_dataframe(text_fi)
+            pfi_table = text_fi[['feature', 'weight']].sort_values(
             "weight", ascending=False).rename(columns={'feature': "Features", "weight": "Weights"}).style.background_gradient(axis=0)
-        with st.expander("See explanation of feature importance"):
-            st.markdown('''
-                        Most machine learning models are *black-box* models. This means that they're created
-                        directly from data and even the people who designed them, cannot understand how
-                        the variables are being combined to make predictions. Methods to explain these models
-                        are usually in two forms: local and global explainers.\n 
-                        Local explainers allow us to
-                        explain a specific prediction e.g. *LIME (Local Interpretable Model-agnostic Explanations)*
-                        creates a white-box or explainable model that works well in the area close to the concerned
-                        prediction example.\n
-                        Global explainers are used to explain the whole model and how every feature impacts it on a
-                        general level e.g. *Permutation Feature Importance (PFI)* looks at how much the score (R-Squared, F-1 score, etc)
-                        decreases when a feature is not available. The values below are generated using [PFI and the ELI5 libary](https://eli5.readthedocs.io/en/latest/blackbox/permutation_importance.html).
-                        ''')
-        st.table(pfi_table)
+            with st.expander("See explanation of feature importance"):
+                st.markdown('''
+                            Most machine learning models are *black-box* models. This means that they're created
+                            directly from data and even the people who designed them, cannot understand how
+                            the variables are being combined to make predictions. Methods to explain these models
+                            are usually in two forms: local and global explainers.\n 
+                            Local explainers allow us to
+                            explain a specific prediction e.g. *LIME (Local Interpretable Model-agnostic Explanations)*
+                            creates a white-box or explainable model that works well in the area close to the concerned
+                            prediction example.\n
+                            Global explainers are used to explain the whole model and how every feature impacts it on a
+                            general level e.g. *Permutation Feature Importance (PFI)* looks at how much the score (R-Squared, F-1 score, etc)
+                            decreases when a feature is not available. The values below are generated using [PFI and the ELI5 libary](https://eli5.readthedocs.io/en/latest/blackbox/permutation_importance.html).
+                            ''')
+            st.table(pfi_table)
         # print a confusion matrix using test data
         y_pred = model.predict(X_test)
 
         # Plot conf matrix and f1 score in an expander
         with st.expander(
                 label='See classification accuracy and other metrics for the selected model'):
-            # col_i, col_ii = st.beta_columns([2, 5])
             conf_fig = plt.figure(figsize=(5, 4))
             conf_matrix = metrics.confusion_matrix(y_pred, y_test)
             sns.heatmap(conf_matrix, annot=True, xticklabels=[
@@ -470,8 +475,6 @@ with main2:
                 ''')
         st.info('''Be aware that none of the models have 100% accuracy (especially Logistic Regression) and thus may output
                 wrong predictions.''')
-        # make 6 different columns
-        # col4, col5, col6, col7, col8, col9 = st.beta_columns(6)
 
         acc_length = st.number_input("Account length", min_value=0, step=1)
         int_plan = st.number_input(
@@ -581,7 +584,6 @@ with main2:
                     I've used *2 Principal Components* that allow us to visualize all 17 features on 2 dimensions
                     while retaining *65.31% variance* of the underlying data (graph on bottom left).
                     ''')
-        # st, cold = st.beta_columns(2)
         fig, ax = plt.subplots(figsize=(7, 6))
         ax = sns.scatterplot(x=X_new[:, 0], y=X_new[:, 1],
                              hue=cluster_data.cluster_id.values, palette="pastel").set_title('Principal Components')
@@ -596,11 +598,7 @@ with main2:
                          options=cluster_data.drop("cluster_id", axis=1).columns)
         y = st.selectbox(label="Select Y axis", options=cluster_data.drop(
             "cluster_id", axis=1).columns.sort_values(ascending=False))
-
-        st.markdown('''
-                    
-                    ''')
-
+        # Draw graph
         fig2, ax2 = plt.subplots(figsize=(7, 6))
         ax2 = sns.scatterplot(data=cluster_data, x=x, y=y,
                               hue=cluster_data.cluster_id.values, palette="pastel")
@@ -610,12 +608,19 @@ with main2:
         st.write('''
                  ---
                 What do these clusters represent? Let's take a look at the Credit Limit vs Purchases graph for
-                clustering with 2 and 3 clusters.\n
+                clustering with 2 and 3 clusters (you might need to set the model to 2 and 3 above).\n
                 For 2 clusters, the model has clustered customers with low credit card usage in
                     one cluster and higher usage in another cluster.
                     For 3 clusters, the model has put customers with unusually high amounts of purchases
                     and credit limits in one cluster and customers with very low amounts in another.
                 ''')
+         # Draw graph as example
+        fig2, ax2 = plt.subplots(figsize=(7, 6))
+        ax2 = sns.scatterplot(data=cluster_data, x='CREDIT_LIMIT', y='PURCHASES',
+                              hue=cluster_data.cluster_id.values, palette="pastel")
+        buf2 = BytesIO()
+        fig2.savefig(buf2, format="png")
+        st.image(buf2)
 
     # CUSTOMER SEGMENTATION - RFM
     if question == 'Who are our most important customers?':
